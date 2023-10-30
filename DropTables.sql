@@ -4,3 +4,16 @@ to run when there are errors in your create file or insert file and you need to 
 everything. Steps 3 and 4 will make it easier to grade your submission as well. Name this file
 “DropTables.sql”
 */
+
+DROP TABLE PIZZA;
+DROP TABLE ORDERS;
+DROP TABLE DINE_IN;
+DROP TABLE DELIVERY;
+DROP TABLE PICKUP;
+DROP TABLE TOPPINGS;
+DROP TABLE TOPPINGLIST;
+DROP TABLE DISCOUNTS;
+DROP TABLE ORDERDISCOUNT;
+DROP TABLE PIZZADISCOUNT;
+DROP TABLE BASEPRICE;
+DROP TABLE CUSTOMER;
