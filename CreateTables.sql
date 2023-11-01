@@ -11,8 +11,6 @@ CREATE TABLE PIZZA (
     Size varchar(3) FOREIGN KEY,
     Pizza_State varchar(10), 
     Base_Cost float,
-    Topping_List FOREIGN KEY, -- wait do we need this...?
-    Discount_List FOREIGN KEY, -- or this...since Pizza_ID is a FK in the middle, couldn't we just reference that table?
     Order_ID int FOREIGN KEY,
     Base_Price float
 );
@@ -22,7 +20,6 @@ CREATE TABLE ORDERS (
     Order_Type varchar(10),
     Order_Total float,
     Time_Ordered date,
-    Discount_List FOREIGN KEY
 );
 
 CREATE TABLE DINE_IN (
