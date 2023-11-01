@@ -8,18 +8,23 @@ create the database schema. Name this file “CreateTables.sql”
 CREATE TABLE BASEPRICE (
     Pizza_Size varchar(3),
     Crust_Type varchar(10),
-    Base_Cost float,
-    Base_Price float,
+    Base_Price DECIMAL(3,2),
+    Base_Cost DECIMAL(3,2),
     PRIMARY KEY (Crust_Type, Pizza_Size)
 );
 
 CREATE TABLE TOPPINGS (
     Topping_ID int PRIMARY KEY,
     Topping_Name varchar(20),
-    Topping_Cust_Price float,
-    Topping_Buss_Price float,
-    Min_Inventory int CHECK(Min_Inventory >=50),
-    Current_Inventory int
+    Topping_Price_Per_Unit DECIMAL(3,2),
+    Topping_Cost_Per_Unit DECIMAL(3,2),
+    Current_Inventory int, 
+    Min_Inventory int,
+    Units_Small int CHECK(Units_Small > 0),
+    Units_Medium int CHECK(Units_Medium > 0),
+    Units_Large int CHECK(Units_Large > 0),
+    Units_XLarge int CHECK(Units_XLarge > 0)
+
 );
 
 CREATE TABLE CUSTOMER (
@@ -36,15 +41,15 @@ CREATE TABLE CUSTOMER (
 CREATE TABLE DISCOUNTS (
     Discount_ID int PRIMARY KEY,
     Discount_Name varchar(20), 
-    Dollar_Amt_Off float,
-    Percent_Off float CHECK (Percent_Off <= 1 AND Percent_Off >= 0),
+    Dollar_Amt_Off DECIMAL(3,2),
+    Percent_Off DECIMAL(3,2) CHECK (Percent_Off <= 1 AND Percent_Off >= 0),
     Type_Discount varchar(10)
 );
 
 CREATE TABLE ORDERS (
     Order_ID int PRIMARY KEY,
     Order_Type varchar(10),
-    Order_Total float,
+    Order_Total DECIMAL(3,2),
     Time_Ordered date
 );
 
@@ -73,9 +78,9 @@ CREATE TABLE PIZZA (
     Crust_Type varchar(20),
     Pizza_Size varchar(3),
     Pizza_State varchar(10), 
-    Base_Cost float,
+    Base_Cost DECIMAL(3,2),
     Order_ID int,
-    Base_Price float,
+    Base_Price DECIMAL(3,2),
     FOREIGN KEY (Order_ID) REFERENCES ORDERS(Order_ID),
     FOREIGN KEY (Crust_Type, Pizza_Size) REFERENCES BASEPRICE(Crust_Type, Pizza_Size)
 );
