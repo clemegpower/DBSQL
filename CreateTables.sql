@@ -45,7 +45,7 @@ CREATE TABLE ORDERS (
     Order_ID int PRIMARY KEY,
     Order_Type varchar(10),
     Order_Total float,
-    Time_Ordered date,
+    Time_Ordered date
 );
 
 CREATE TABLE DINE_IN (
