@@ -81,23 +81,26 @@ CREATE TABLE PIZZA (
 );
 
 CREATE TABLE PIZZATOPPINGS (
-    Pizza_ID int PRIMARY KEY,
-    Topping_ID int PRIMARY KEY,
+    Pizza_ID int,
+    Topping_ID int,
+    PRIMARY KEY (Pizza_ID, Topping_ID),
     FOREIGN KEY (Pizza_ID) REFERENCES PIZZA(Pizza_ID),
     FOREIGN KEY (Topping_ID) REFERENCES TOPPINGS(Topping_ID)
 );
 
 
 CREATE TABLE PIZZADISCOUNT (
-    Pizza_ID int PRIMARY KEY,
-    Discount_ID int PRIMARY KEY,
+    Pizza_ID int,
+    Discount_ID int,
+    PRIMARY KEY (Pizza_ID, Discount_ID),
     FOREIGN KEY (Pizza_ID) REFERENCES PIZZA(Pizza_ID),
     FOREIGN KEY (Discount_ID) REFERENCES DISCOUNTS(Discount_ID)
 );
 
 CREATE TABLE ORDERDISCOUNT (
-    Order_ID int PRIMARY KEY,
-    Discount_ID int PRIMARY KEY,
+    Order_ID int,
+    Discount_ID int,
+    PRIMARY KEY (Order_ID, Discount_ID),
     FOREIGN KEY (Order_ID) REFERENCES ORDERS(Order_ID),
     FOREIGN KEY (Discount_ID) REFERENCES DISCOUNTS(Discount_ID)
 );
