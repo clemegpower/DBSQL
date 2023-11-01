@@ -5,107 +5,107 @@ Run the SQL script in MySQL to create your database. This script should include 
 create the database schema. Name this file “CreateTables.sql”
 */
 
-CREATE TABLE BASEPRICE (
-    Pizza_Size varchar(3),
-    Crust_Type varchar(10),
-    Base_Price DECIMAL(3,2),
-    Base_Cost DECIMAL(3,2),
-    PRIMARY KEY (Crust_Type, Pizza_Size)
+CREATE TABLE base (
+    BasePizzaSize varchar(3),
+    BaseCrustType varchar(10),
+    BasePrice DECIMAL(3,2),
+    BaseCost DECIMAL(3,2),
+    PRIMARY KEY (BaseCrustType, BasePizzaSize)
 );
 
-CREATE TABLE TOPPINGS (
-    Topping_ID int PRIMARY KEY,
-    Topping_Name varchar(20),
-    Topping_Price_Per_Unit DECIMAL(3,2),
-    Topping_Cost_Per_Unit DECIMAL(3,2),
-    Current_Inventory int, 
-    Min_Inventory int,
-    Units_Small int CHECK(Units_Small > 0),
-    Units_Medium int CHECK(Units_Medium > 0),
-    Units_Large int CHECK(Units_Large > 0),
-    Units_XLarge int CHECK(Units_XLarge > 0)
+CREATE TABLE topping (
+    ToppingId int PRIMARY KEY,
+    ToppingName varchar(20),
+    ToppingPricePer DECIMAL(3,2),
+    ToppingCostPer DECIMAL(3,2),
+    ToppingCurrentInventory int, 
+    ToppingMinInventory int,
+    ToppingUnitsSmall int CHECK(ToppingUnitsSmall > 0),
+    ToppingUnitsMedium int CHECK(ToppingUnitsMedium > 0),
+    ToppingUnitsLarge int CHECK(ToppingUnitsLarge > 0),
+    ToppingUnitsXLarge int CHECK(ToppingUnitsXLarge > 0)
 
 );
 
-CREATE TABLE CUSTOMER (
-    Cust_ID int PRIMARY KEY,
-    Cust_FName varchar(20), 
-    Cust_LName varchar(20),
-    Cust_Phone int, 
-    Cust_Street varchar(50),
-    Cust_City varchar(30),
-    Cust_State varchar(5),
-    Cust_Zipcode int
+CREATE TABLE customer (
+    CustomerId int PRIMARY KEY,
+    CustomerFName varchar(20), 
+    CustomerLName varchar(20),
+    CustomerPhone int, 
+    CustomerStreet varchar(50),
+    CustomerCity varchar(30),
+    CustomerState varchar(5),
+    CustomerZipcode int
 );
 
-CREATE TABLE DISCOUNTS (
-    Discount_ID int PRIMARY KEY,
-    Discount_Name varchar(20), 
-    Dollar_Amt_Off DECIMAL(3,2),
-    Percent_Off DECIMAL(3,2) CHECK (Percent_Off <= 1 AND Percent_Off >= 0),
-    Type_Discount varchar(10)
+CREATE TABLE discount (
+    DiscountId int PRIMARY KEY,
+    DiscountName varchar(20), 
+    DiscountDollarAmt DECIMAL(3,2),
+    DiscountPercent DECIMAL(3,2) CHECK (DiscountPercent <= 1 AND DiscountPercent >= 0),
+    DiscountType varchar(10)
 );
 
-CREATE TABLE ORDERS (
-    Order_ID int PRIMARY KEY,
-    Order_Type varchar(10),
-    Order_Total DECIMAL(3,2),
-    Time_Ordered date
+CREATE TABLE order (
+    OrderId int PRIMARY KEY,
+    OrderType varchar(10),
+    OrderTotal DECIMAL(3,2),
+    OrderTime date
 );
 
-CREATE TABLE DINE_IN (
-    Order_ID int PRIMARY KEY,
-    Table_Num int,
-    FOREIGN KEY (Order_ID) REFERENCES ORDERS(Order_ID)
+CREATE TABLE dinein (
+    OrderId int PRIMARY KEY,
+    TableNum int,
+    FOREIGN KEY (OrderId) REFERENCES order(OrderId)
 );
 
-CREATE TABLE DELIVERY (
-    Order_ID int PRIMARY KEY,
-    Cust_ID int,
-    FOREIGN KEY (Order_ID) REFERENCES ORDERS(Order_ID),
-    FOREIGN KEY (Cust_ID) REFERENCES CUSTOMER(Cust_ID)
+CREATE TABLE delivery (
+    OrderId int PRIMARY KEY,
+    CustomerId int,
+    FOREIGN KEY (OrderId) REFERENCES order(OrderId),
+    FOREIGN KEY (CustomerId) REFERENCES customer(CustomerId)
 );
 
-CREATE TABLE PICKUP (
-    Order_ID int PRIMARY KEY,
-    Cust_ID int,
-    FOREIGN KEY (Order_ID) REFERENCES ORDERS(Order_ID),
-    FOREIGN KEY (Cust_ID) REFERENCES CUSTOMER(Cust_ID)
+CREATE TABLE pickup (
+    OrderId int PRIMARY KEY,
+    CustomerId int,
+    FOREIGN KEY (OrderId) REFERENCES order(OrderId),
+    FOREIGN KEY (CustomerId) REFERENCES customer(CustomerId)
 );
 
-CREATE TABLE PIZZA (
-    Pizza_ID int PRIMARY KEY,
-    Crust_Type varchar(20),
-    Pizza_Size varchar(3),
-    Pizza_State varchar(10), 
-    Base_Cost DECIMAL(3,2),
-    Order_ID int,
-    Base_Price DECIMAL(3,2),
-    FOREIGN KEY (Order_ID) REFERENCES ORDERS(Order_ID),
-    FOREIGN KEY (Crust_Type, Pizza_Size) REFERENCES BASEPRICE(Crust_Type, Pizza_Size)
+CREATE TABLE pizza (
+    PizzaId int PRIMARY KEY,
+    PizzaCrustType varchar(20),
+    PizzaSize varchar(3),
+    PizzaState varchar(10), 
+    PizzaBaseCost DECIMAL(3,2),
+    PizzaOrderId int,
+    PizzaBasePrice DECIMAL(3,2),
+    FOREIGN KEY (PizzaOrderId) REFERENCES order(OrderId),
+    FOREIGN KEY (PizzaCrustType, PizzaSize) REFERENCES base(BaseCrustType, BasePizzaSize)
 );
 
-CREATE TABLE PIZZATOPPINGS (
-    Pizza_ID int,
-    Topping_ID int,
-    PRIMARY KEY (Pizza_ID, Topping_ID),
-    FOREIGN KEY (Pizza_ID) REFERENCES PIZZA(Pizza_ID),
-    FOREIGN KEY (Topping_ID) REFERENCES TOPPINGS(Topping_ID)
+CREATE TABLE pizzatopping (
+    PizzaToppingPizzaId int,
+    PizzaToppingToppingId int,
+    PRIMARY KEY (PizzaToppingPizzaId, PizzaToppingToppingId),
+    FOREIGN KEY (PizzaToppingPizzaId) REFERENCES pizza(PizzaId),
+    FOREIGN KEY (PizzaToppingToppingId) REFERENCES topping(ToppingId)
 );
 
 
-CREATE TABLE PIZZADISCOUNT (
-    Pizza_ID int,
-    Discount_ID int,
-    PRIMARY KEY (Pizza_ID, Discount_ID),
-    FOREIGN KEY (Pizza_ID) REFERENCES PIZZA(Pizza_ID),
-    FOREIGN KEY (Discount_ID) REFERENCES DISCOUNTS(Discount_ID)
+CREATE TABLE pizzadiscount (
+    PizzaDiscountPizzaId int,
+    PizzaDiscountDiscountId int,
+    PRIMARY KEY (PizzaDiscountPizzaId, PizzaDiscountDiscountId),
+    FOREIGN KEY (PizzaDiscountPizzaId) REFERENCES pizza(PizzaId),
+    FOREIGN KEY (PizzaDiscountDiscountId) REFERENCES discount(DiscountId)
 );
 
-CREATE TABLE ORDERDISCOUNT (
-    Order_ID int,
-    Discount_ID int,
-    PRIMARY KEY (Order_ID, Discount_ID),
-    FOREIGN KEY (Order_ID) REFERENCES ORDERS(Order_ID),
-    FOREIGN KEY (Discount_ID) REFERENCES DISCOUNTS(Discount_ID)
+CREATE TABLE orderdiscount (
+    OrderDiscountOrderId int,
+    OrderDiscountDiscountId int,
+    PRIMARY KEY (OrderDiscountOrderId, OrderDiscountDiscountId),
+    FOREIGN KEY (OrderDiscountOrderId) REFERENCES order(OrderId),
+    FOREIGN KEY (OrderDiscountDiscountId) REFERENCES discount(DiscountId)
 );
