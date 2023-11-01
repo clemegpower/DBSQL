@@ -75,8 +75,8 @@ CREATE TABLE PIZZA (
     Pizza_State varchar(10), 
     Base_Cost float,
     Order_ID int,
-    Base_Price float
-    FOREIGN KEY (Order_ID) REFERENCES ORDERS(Order_ID)
+    Base_Price float,
+    FOREIGN KEY (Order_ID) REFERENCES ORDERS(Order_ID),
     FOREIGN KEY (Crust_Type, Pizza_Size) REFERENCES BASEPRICE(Crust_Type, Pizza_Size)
 );
 
