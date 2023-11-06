@@ -62,7 +62,7 @@ CREATE TABLE dinein (
 CREATE TABLE delivery (
     OrderId int PRIMARY KEY,
     CustomerId int,
-    FOREIGN KEY (OrderId) REFERENCES order(OrderInfoId),
+    FOREIGN KEY (OrderId) REFERENCES orderinfo(OrderInfoId),
     FOREIGN KEY (CustomerId) REFERENCES customer(CustomerId)
 );
 
