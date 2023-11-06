@@ -6,7 +6,7 @@ your database. Name this file “ViewTables.sql”
 */
 
 SELECT * FROM pizza;
-SELECT * FROM order;
+SELECT * FROM orderinfo;
 SELECT * FROM dinein;
 SELECT * FROM delivery;
 SELECT * FROM pickup;

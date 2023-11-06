@@ -12,7 +12,7 @@ DROP TABLE pizza;
 DROP TABLE pickup;
 DROP TABLE delivery;
 DROP TABLE dinein;
-DROP TABLE order;
+DROP TABLE orderinfo;
 DROP TABLE discount;
 DROP TABLE customer;
 DROP TABLE topping;

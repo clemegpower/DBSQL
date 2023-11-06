@@ -46,30 +46,30 @@ CREATE TABLE discount (
     DiscountType varchar(10)
 );
 
-CREATE TABLE order (
-    OrderId int PRIMARY KEY,
-    OrderType varchar(10),
-    OrderTotal DECIMAL(3,2),
-    OrderTime date
+CREATE TABLE orderinfo (
+    OrderInfoId int PRIMARY KEY,
+    OrderInfoType varchar(10),
+    OrderInfoTotal DECIMAL(3,2),
+    OrderInfoTime date
 );
 
 CREATE TABLE dinein (
     OrderId int PRIMARY KEY,
     TableNum int,
-    FOREIGN KEY (OrderId) REFERENCES order(OrderId)
+    FOREIGN KEY (OrderId) REFERENCES orderinfo(OrderInfoId)
 );
 
 CREATE TABLE delivery (
     OrderId int PRIMARY KEY,
     CustomerId int,
-    FOREIGN KEY (OrderId) REFERENCES order(OrderId),
+    FOREIGN KEY (OrderId) REFERENCES order(OrderInfoId),
     FOREIGN KEY (CustomerId) REFERENCES customer(CustomerId)
 );
 
 CREATE TABLE pickup (
     OrderId int PRIMARY KEY,
     CustomerId int,
-    FOREIGN KEY (OrderId) REFERENCES order(OrderId),
+    FOREIGN KEY (OrderId) REFERENCES orderinfo(OrderInfoId),
     FOREIGN KEY (CustomerId) REFERENCES customer(CustomerId)
 );
 
@@ -81,7 +81,7 @@ CREATE TABLE pizza (
     PizzaBaseCost DECIMAL(3,2),
     PizzaOrderId int,
     PizzaBasePrice DECIMAL(3,2),
-    FOREIGN KEY (PizzaOrderId) REFERENCES order(OrderId),
+    FOREIGN KEY (PizzaOrderId) REFERENCES orderinfo(OrderInfoId),
     FOREIGN KEY (PizzaCrustType, PizzaSize) REFERENCES base(BaseCrustType, BasePizzaSize)
 );
 
@@ -106,6 +106,6 @@ CREATE TABLE orderdiscount (
     OrderDiscountOrderId int,
     OrderDiscountDiscountId int,
     PRIMARY KEY (OrderDiscountOrderId, OrderDiscountDiscountId),
-    FOREIGN KEY (OrderDiscountOrderId) REFERENCES order(OrderId),
+    FOREIGN KEY (OrderDiscountOrderId) REFERENCES orderinfo(OrderInfoId),
     FOREIGN KEY (OrderDiscountDiscountId) REFERENCES discount(DiscountId)
 );
