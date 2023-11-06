@@ -6,15 +6,15 @@ create the database schema. Name this file “CreateTables.sql”
 */
 
 CREATE TABLE base (
-    BasePizzaSize varchar(3),
-    BaseCrustType varchar(10),
-    BasePrice DECIMAL(3,2),
-    BaseCost DECIMAL(3,2),
+    BasePizzaSize varchar(10),
+    BaseCrustType varchar(15),
+    BasePrice DECIMAL(5,2),
+    BaseCost DECIMAL(5,2),
     PRIMARY KEY (BaseCrustType, BasePizzaSize)
 );
 
 CREATE TABLE topping (
-    ToppingId int PRIMARY KEY,
+    ToppingId int NOT NULL AUTO_INCREMENT,
     ToppingName varchar(20),
     ToppingPricePer DECIMAL(3,2),
     ToppingCostPer DECIMAL(3,2),
@@ -23,34 +23,37 @@ CREATE TABLE topping (
     ToppingUnitsSmall int CHECK(ToppingUnitsSmall > 0),
     ToppingUnitsMedium int CHECK(ToppingUnitsMedium > 0),
     ToppingUnitsLarge int CHECK(ToppingUnitsLarge > 0),
-    ToppingUnitsXLarge int CHECK(ToppingUnitsXLarge > 0)
-
+    ToppingUnitsXLarge int CHECK(ToppingUnitsXLarge > 0),
+    PRIMARY KEY (ToppingId)
 );
 
 CREATE TABLE customer (
-    CustomerId int PRIMARY KEY,
+    CustomerId int AUTO_INCREMENT,
     CustomerFName varchar(20), 
     CustomerLName varchar(20),
     CustomerPhone int, 
     CustomerStreet varchar(50),
     CustomerCity varchar(30),
     CustomerState varchar(5),
-    CustomerZipcode int
+    CustomerZipcode int,
+    PRIMARY KEY (CustomerId)
 );
 
 CREATE TABLE discount (
-    DiscountId int PRIMARY KEY,
+    DiscountId int AUTO_INCREMENT,
     DiscountName varchar(20), 
     DiscountDollarAmt DECIMAL(3,2),
     DiscountPercent DECIMAL(3,2) CHECK (DiscountPercent <= 1 AND DiscountPercent >= 0),
-    DiscountType varchar(10)
+    DiscountType varchar(10),
+    PRIMARY KEY (DiscountId)
 );
 
 CREATE TABLE orderinfo (
-    OrderInfoId int PRIMARY KEY,
+    OrderInfoId int AUTO_INCREMENT,
     OrderInfoType varchar(10),
     OrderInfoTotal DECIMAL(3,2),
-    OrderInfoTime date
+    OrderInfoTime date,
+    PRIMARY KEY (OrderInfoId)
 );
 
 CREATE TABLE dinein (
@@ -74,13 +77,14 @@ CREATE TABLE pickup (
 );
 
 CREATE TABLE pizza (
-    PizzaId int PRIMARY KEY,
+    PizzaId int AUTO_INCREMENT,
     PizzaCrustType varchar(20),
     PizzaSize varchar(3),
     PizzaState varchar(10), 
     PizzaBaseCost DECIMAL(3,2),
     PizzaOrderId int,
     PizzaBasePrice DECIMAL(3,2),
+    PRIMARY KEY (PizzaId),
     FOREIGN KEY (PizzaOrderId) REFERENCES orderinfo(OrderInfoId),
     FOREIGN KEY (PizzaCrustType, PizzaSize) REFERENCES base(BaseCrustType, BasePizzaSize)
 );
