@@ -52,28 +52,28 @@ CREATE TABLE orderinfo (
     OrderInfoId int AUTO_INCREMENT,
     OrderInfoType varchar(10),
     OrderInfoTotal DECIMAL(3,2),
-    OrderInfoTime date,
+    OrderInfoTime datetime,
     PRIMARY KEY (OrderInfoId)
 );
 
 CREATE TABLE dinein (
-    OrderId int PRIMARY KEY,
-    TableNum int,
-    FOREIGN KEY (OrderId) REFERENCES orderinfo(OrderInfoId)
+    DineInOrderId int PRIMARY KEY,
+    DineInTableNum int,
+    FOREIGN KEY (DineInOrderId) REFERENCES orderinfo(OrderInfoId)
 );
 
 CREATE TABLE delivery (
-    OrderId int PRIMARY KEY,
-    CustomerId int,
-    FOREIGN KEY (OrderId) REFERENCES orderinfo(OrderInfoId),
-    FOREIGN KEY (CustomerId) REFERENCES customer(CustomerId)
+    DeliveryOrderId int PRIMARY KEY,
+    DeliveryCustomerId int,
+    FOREIGN KEY (DeliveryOrderId) REFERENCES orderinfo(OrderInfoId),
+    FOREIGN KEY (DeliveryCustomerId) REFERENCES customer(CustomerId)
 );
 
 CREATE TABLE pickup (
-    OrderId int PRIMARY KEY,
-    CustomerId int,
-    FOREIGN KEY (OrderId) REFERENCES orderinfo(OrderInfoId),
-    FOREIGN KEY (CustomerId) REFERENCES customer(CustomerId)
+    PickupOrderId int PRIMARY KEY,
+    PickupCustomerId int,
+    FOREIGN KEY (PickupOrderId) REFERENCES orderinfo(OrderInfoId),
+    FOREIGN KEY (PickupCustomerId) REFERENCES customer(CustomerId)
 );
 
 CREATE TABLE pizza (
@@ -92,6 +92,7 @@ CREATE TABLE pizza (
 CREATE TABLE pizzatopping (
     PizzaToppingPizzaId int,
     PizzaToppingToppingId int,
+    PizzaToppingQuantity int,
     PRIMARY KEY (PizzaToppingPizzaId, PizzaToppingToppingId),
     FOREIGN KEY (PizzaToppingPizzaId) REFERENCES pizza(PizzaId),
     FOREIGN KEY (PizzaToppingToppingId) REFERENCES topping(ToppingId)
