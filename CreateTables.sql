@@ -7,7 +7,7 @@ create the database schema. Name this file “CreateTables.sql”
 
 CREATE TABLE base (
     BasePizzaSize varchar(10),
-    BaseCrustType varchar(15),
+    BaseCrustType varchar(20),
     BasePrice DECIMAL(5,2),
     BaseCost DECIMAL(5,2),
     PRIMARY KEY (BaseCrustType, BasePizzaSize)
@@ -31,7 +31,7 @@ CREATE TABLE customer (
     CustomerId int AUTO_INCREMENT,
     CustomerFName varchar(20), 
     CustomerLName varchar(20),
-    CustomerPhone int, 
+    CustomerPhone varchar(20), 
     CustomerStreet varchar(50),
     CustomerCity varchar(30),
     CustomerState varchar(5),
@@ -42,8 +42,8 @@ CREATE TABLE customer (
 CREATE TABLE discount (
     DiscountId int AUTO_INCREMENT,
     DiscountName varchar(20), 
-    DiscountDollarAmt DECIMAL(3,2),
-    DiscountPercent DECIMAL(3,2) CHECK (DiscountPercent <= 1 AND DiscountPercent >= 0),
+    DiscountDollarAmt DECIMAL(5,2),
+    DiscountPercent DECIMAL(5,2) CHECK (DiscountPercent <= 1 AND DiscountPercent >= 0),
     DiscountType varchar(10),
     PRIMARY KEY (DiscountId)
 );
@@ -51,7 +51,7 @@ CREATE TABLE discount (
 CREATE TABLE orderinfo (
     OrderInfoId int AUTO_INCREMENT,
     OrderInfoType varchar(10),
-    OrderInfoTotal DECIMAL(3,2),
+    OrderInfoTotal DECIMAL(5,2),
     OrderInfoTime datetime,
     PRIMARY KEY (OrderInfoId)
 );
@@ -79,11 +79,11 @@ CREATE TABLE pickup (
 CREATE TABLE pizza (
     PizzaId int AUTO_INCREMENT,
     PizzaCrustType varchar(20),
-    PizzaSize varchar(3),
+    PizzaSize varchar(10),
     PizzaState varchar(10), 
-    PizzaBaseCost DECIMAL(3,2),
+    PizzaBaseCost DECIMAL(5,2),
     PizzaOrderId int,
-    PizzaBasePrice DECIMAL(3,2),
+    PizzaBasePrice DECIMAL(5,2),
     PRIMARY KEY (PizzaId),
     FOREIGN KEY (PizzaOrderId) REFERENCES orderinfo(OrderInfoId),
     FOREIGN KEY (PizzaCrustType, PizzaSize) REFERENCES base(BaseCrustType, BasePizzaSize)

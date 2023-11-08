@@ -134,27 +134,27 @@ VALUES ("Bacon", 1.5, 0.25, 89, 0, 1, 1.5, 2, 3);
 /*
 Inserting into discount table
 */
---id:1
+-- id:1
 INSERT INTO discount (DiscountName, DiscountPercent)
 VALUES ("Employee", 0.15);
 
---id:2
+-- id:2
 INSERT INTO discount (DiscountName, DiscountDollarAmt)
 VALUES ("Lunch Special Medium", 1.00);
 
---id:3
+-- id:3
 INSERT INTO discount (DiscountName, DiscountDollarAmt)
 VALUES ("Lunch Special Large", 2.00);
 
---id:4
+-- id:4
 INSERT INTO discount (DiscountName, DiscountDollarAmt)
 VALUES ("Specialty Pizza", 1.50);
 
---id:5
+-- id:5
 INSERT INTO discount (DiscountName, DiscountPercent)
 VALUES ("Happy Hour", 0.10);
 
---id:6
+-- id:6
 INSERT INTO discount (DiscountName, DiscountPercent)
 VALUES ("Gameday Special", 0.20);
 
@@ -217,23 +217,23 @@ Cheese (extra), Pepperoni, and Sausage (Price: $20.75, Cost: $3.68). They used t
 discount for the pizza.
 */
 
---order id:1
+-- order id:1
 INSERT INTO orderinfo(OrderInfoType, OrderInfoTotal, OrderInfoTime)
-VALUES ("Dine-in", 20.75, 2023-03-05 12:03:00);
---dine in 
+VALUES ("Dine-in", 20.75, "2023-03-05T12:03:00");
+-- dine in 
 INSERT INTO dinein(DineInOrderId, DineInTableNum)
 VALUES (1, 21);
---pizza id:1
+-- pizza id:1
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Thin", "Large", 3.68, 20.75, "Completed", 1);
---toppings
+-- toppings
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (1, 13, 2);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (1, 1, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (1, 2, 1);
---pizzadiscount
+-- pizzadiscount
 INSERT INTO pizzadiscount (PizzaDiscountPizzaId, PizzaDiscountDiscountId)
 VALUES (1, 3);
 
@@ -244,22 +244,22 @@ They used the “Lunch Special Medium” and the “Specialty Pizza” discounts
 a small original crust pizza with Regular Cheese, Chicken and Banana Peppers (Price: $6.93, Cost: $1.40).
 */
 
---order id:2
+-- order id:2
 INSERT INTO orderinfo(OrderInfoType, OrderInfoTotal, OrderInfoTime)
-VALUES ("Dine-in", 19.78, 2023-04-03 12:05:00);
---dine in order
+VALUES ("Dine-in", 19.78, "2023-04-03T12:05:00");
+-- dine in order
 INSERT INTO dinein(DineInOrderId, DineInTableNum)
 VALUES (2, 4);
 
---pizzas
---id:2
+-- pizzas
+-- id:2
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Pan", "Medium", 3.23, 12.85, "Completed", 2);
---id:3
+-- id:3
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Original", "Small", 1.40, 6.93, "Completed", 2);
 
---toppings pizza id:2
+-- toppings pizza id:2
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (2, 15, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
@@ -273,7 +273,7 @@ VALUES (2, 8, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (2, 12, 1);
 
---toppings pizza id:3
+-- toppings pizza id:3
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (3, 13, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
@@ -281,7 +281,7 @@ VALUES (3, 4, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (3, 12, 1);
 
---discount pizza id:2
+-- discount pizza id:2
 INSERT INTO pizzadiscount (PizzaDiscountPizzaId, PizzaDiscountDiscountId)
 VALUES (2, 2);
 INSERT INTO pizzadiscount (PizzaDiscountPizzaId, PizzaDiscountDiscountId)
@@ -293,64 +293,64 @@ with Regular Cheese and Pepperoni (Price: $14.88, Cost: $3.30 each). Andrew’s 
 5861.
 */
 
---customer id:1
+-- customer id:1
 INSERT INTO customer(CustomerFName, CustomerLName, CustomerPhone)
-VALUES ("Andrew", "Wilkes-Krier", 8642545861);
+VALUES ("Andrew", "Wilkes-Krier", "8642545861");
 
---order id:3
+-- order id:3
 INSERT INTO orderinfo(OrderInfoType, OrderInfoTotal, OrderInfoTime)
-VALUES ("Pickup", 89.28, 2023-03-03 21:30:00);
+VALUES ("Pickup", 89.28, "2023-03-03T21:30:00");
 
---pickup order
+-- pickup order
 INSERT INTO pickup(PickupOrderId, PickupCustomerId)
 VALUES (3, 1);
 
---pizzas
---id:4
+-- pizzas
+-- id:4
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Original", "Large", 3.30, 14.88, "Completed", 3);
---id:5
+-- id:5
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Original", "Large", 3.30, 14.88, "Completed", 3);
---id:6
+-- id:6
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Original", "Large", 3.30, 14.88, "Completed", 3);
---id:7
+-- id:7
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Original", "Large", 3.30, 14.88, "Completed", 3);
---id:8
+-- id:8
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Original", "Large", 3.30, 14.88, "Completed", 3);
---id:9
+-- id:9
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Original", "Large", 3.30, 14.88, "Completed", 3);
 
---toppings pizza id:4
+-- toppings pizza id:4
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (4, 1, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (4, 13, 1);
---toppings pizza id:5
+-- toppings pizza id:5
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (5, 1, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (5, 13, 1);
---toppings pizza id:6
+-- toppings pizza id:6
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (6, 1, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (6, 13, 1);
---toppings pizza id:7
+-- toppings pizza id:7
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (7, 1, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (7, 13, 1);
---toppings pizza id:8
+-- toppings pizza id:8
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (8, 1, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (8, 13, 1);
---toppings pizza id:9
+-- toppings pizza id:9
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (9, 1, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
@@ -365,45 +365,45 @@ discount applied to it, and the ham and pineapple pizza has the “Specialty Piz
 pizzas were delivered to 115 Party Blvd, Anderson SC 29621. His phone number is the same as before.
 */
 
---adding address to customer
+-- adding address to customer
 UPDATE customer
 SET CustomerStreet="115 Party Blvd", CustomerCity="Anderson", CustomerState="SC", CustomerZipcode=29621
 WHERE CustomerId=1;
 
---order id:4
+-- order id:4
 INSERT INTO orderinfo(OrderInfoType, OrderInfoTotal, OrderInfoTime)
-VALUES ("Delivery", 86.19, 2023-04-20 19:11:00);
+VALUES ("Delivery", 86.19, "2023-04-20T19:11:00");
 
---delivery order
+-- delivery order
 INSERT INTO delivery(DeliveryOrderId, DeliveryCustomerId)
 VALUES (4, 1);
 
---pizzas
---id:10
+-- pizzas
+-- id:10
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Original", "XLarge", 9.19, 27.94, "Completed", 4);
---id:11
+-- id:11
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Original", "XLarge", 6.25, 31.50, "Completed", 4);
---id:12
+-- id:12
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Original", "XLarge", 8.18, 26.75, "Completed", 4);
 
---toppings pizza id:10
+-- toppings pizza id:10
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (10, 1, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (10, 2, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (10, 14, 1);
---toppings pizza id:11
+-- toppings pizza id:11
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (11, 3, 2);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (11, 10, 2);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (11, 14, 1);
---toppings pizza id:12
+-- toppings pizza id:12
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (12, 4, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
@@ -411,12 +411,12 @@ VALUES (12, 17, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (12, 14, 1);
 
---discount pizza 11
+-- discount pizza 11
 INSERT INTO pizzadiscount (PizzaDiscountPizzaId, PizzaDiscountDiscountId)
 VALUES (11, 4);
---discount order
+-- discount order
 INSERT INTO orderdiscount(OrderDiscountOrderId, OrderDiscountDiscountId)
-VALUES(4, 6)
+VALUES(4, 6);
 
 /*
 On March 2nd at 5:30 pm Matt Engers placed an order for pickup for an xlarge pizza with Green Pepper,
@@ -425,24 +425,24 @@ Free Crust (Price: $27.45, Cost: $7.88). The “Specialty Pizza” discount is a
 number is 864-474-9953
 */
 
---customer id:2
+-- customer id:2
 INSERT INTO customer(CustomerFName, CustomerLName, CustomerPhone)
-VALUES ("Matt", "Engers", 8644749953);
+VALUES ("Matt", "Engers", "8644749953");
 
---order id:5
+-- order id:5
 INSERT INTO orderinfo(OrderInfoType, OrderInfoTotal, OrderInfoTime)
-VALUES ("Pickup", 27.45, 2023-03-02 17:30:00);
+VALUES ("Pickup", 27.45, "2023-03-02T17:30:00");
 
---pickup order
+-- pickup order
 INSERT INTO pickup(PickupOrderId, PickupCustomerId)
 VALUES (5, 2);
 
---pizzas
---id:13
+-- pizzas
+-- id:13
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Gluten-free", "XLarge", 7.88, 27.45, "Completed", 5);
 
---toppings pizza id:13
+-- toppings pizza id:13
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (13, 5, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
@@ -456,7 +456,7 @@ VALUES (13, 9, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (13,16, 1);
 
---discount pizza 13
+-- discount pizza 13
 INSERT INTO pizzadiscount (PizzaDiscountPizzaId, PizzaDiscountDiscountId)
 VALUES (13, 4);
 
@@ -467,24 +467,24 @@ Cost: $4.24). The pizza was delivered to 6745 Wessex St Anderson SC 29621. Frank
 232-8944.
 */
 
---customer id:3
+-- customer id:3
 INSERT INTO customer(CustomerFName, CustomerLName, CustomerPhone, CustomerStreet, CustomerCity, CustomerState, CustomerZipcode)
-VALUES ("Frank", "Turner", 8642328944, "6745 Wessex St", "Anderson", "SC", 29621);
+VALUES ("Frank", "Turner", "8642328944", "6745 Wessex St", "Anderson", "SC", 29621);
 
---order id:6
+-- order id:6
 INSERT INTO orderinfo(OrderInfoType, OrderInfoTotal, OrderInfoTime)
-VALUES ("Delivery", 25.81, 2023-03-02 18:17:00);
+VALUES ("Delivery", 25.81, "2023-03-02T18:17:00");
 
---delivery order
+-- delivery order
 INSERT INTO delivery(DeliveryOrderId, DeliveryCustomerId)
 VALUES (6, 3);
 
---pizzas
---id:14
+-- pizzas
+-- id:14
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Thin", "Large", 4.24, 25.81, "Completed", 6);
 
---toppings pizza id:14
+-- toppings pizza id:14
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (14, 4, 1);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
@@ -504,35 +504,35 @@ $19.25, Cost: $3.25). He used the “Employee” discount on his order. He had t
 Suburban Home, Anderson, SC 29621. His phone number is 864-878-5679.
 */
 
---customer id:4
+-- customer id:4
 INSERT INTO customer(CustomerFName, CustomerLName, CustomerPhone, CustomerStreet, CustomerCity, CustomerState, CustomerZipcode)
-VALUES ("Milo", "Auckerman", 8648785679, "8879 Suburban Home", "Anderson", "SC", 29621);
+VALUES ("Milo", "Auckerman", "8648785679", "8879 Suburban Home", "Anderson", "SC", 29621);
 
---order id:7
+-- order id:7
 INSERT INTO orderinfo(OrderInfoType, OrderInfoTotal, OrderInfoTime)
-VALUES ("Delivery", 37.25, 2023-04-13 20:32:00);
+VALUES ("Delivery", 37.25, "2023-04-13T20:32:00");
 
---delivery order
+-- delivery order
 INSERT INTO delivery(DeliveryOrderId, DeliveryCustomerId)
 VALUES (7, 4);
 
---pizzas
---id:15
+-- pizzas
+-- id:15
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Thin", "Large", 2.75, 18.00, "Completed", 7);
---id:16
+-- id:16
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
 VALUES ("Thin", "Large", 19.25, 3.25, "Completed", 7);
 
---toppings pizza id:15
+-- toppings pizza id:15
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (15, 14, 2);
---toppings pizza id:16
+-- toppings pizza id:16
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (16, 1, 2);
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
 VALUES (16, 13, 1);
 
---discount order
+-- discount order
 INSERT INTO orderdiscount(OrderDiscountOrderId, OrderDiscountDiscountId)
 VALUES(7, 1)
