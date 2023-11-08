@@ -14,9 +14,10 @@ below. You must include a “SELECT * FROM …” command for each of the views.
 this file “CreateViews.sql”
 */
 
-/* ProfitByPizza View:
-    a summary of the profit by pizza size and crust type over a
-    selected time period ordered by profit from most profitable to least profitable
+/* 
+    ProfitByPizza View:
+    A summary of the profit by pizza size and crust type over a selected time
+    period ordered by profit from most profitable to least profitable
 */
 
 CREATE VIEW ProfitByPizza AS
@@ -30,3 +31,18 @@ FROM pizza P
 JOIN orderinfo O ON P.PizzaOrderId=O.OrderInfoId
 GROUP BY PizzaCrustType, PizzaSize
 ORDER BY Profit DESC
+
+
+/* 
+    ToppingPopularity:
+    Rank order of all the toppings (accounting for extra toppings) 
+    from most popular to least popular
+*/
+
+CREATE VIEW ToppingPopularity AS
+
+SELECT ToppingName, SUM(COALESCE(PizzaToppingQuantity, 0)) AS ToppingCount
+FROM topping T
+LEFT JOIN pizzatopping PT ON T.ToppingId=PT.PizzaToppingToppingId
+GROUP BY ToppingId
+ORDER BY ToppingCount DESC
