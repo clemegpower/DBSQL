@@ -522,7 +522,7 @@ INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, Piz
 VALUES ("Thin", "Large", 2.75, 18.00, "Completed", 7);
 -- id:16
 INSERT INTO pizza (PizzaCrustType, PizzaSize, PizzaBaseCost, PizzaBasePrice, PizzaState, PizzaOrderId)
-VALUES ("Thin", "Large", 19.25, 3.25, "Completed", 7);
+VALUES ("Thin", "Large", 3.25,  19.25, "Completed", 7);
 
 -- toppings pizza id:15
 INSERT INTO pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity)
