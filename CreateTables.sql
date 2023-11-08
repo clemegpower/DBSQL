@@ -51,7 +51,8 @@ CREATE TABLE discount (
 CREATE TABLE orderinfo (
     OrderInfoId int AUTO_INCREMENT,
     OrderInfoType varchar(10),
-    OrderInfoTotal DECIMAL(5,2),
+    OrderInfoPrice DECIMAL(5,2),
+    OrderInfoCost DECIMAL(5, 2),
     OrderInfoTime datetime,
     PRIMARY KEY (OrderInfoId)
 );

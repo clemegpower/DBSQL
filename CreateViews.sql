@@ -25,12 +25,12 @@ CREATE VIEW ProfitByPizza AS
 SELECT 
 	PizzaCrustType AS 'Crust', 
     PizzaSize AS 'Type', 
-    sum(PizzaBasePrice-PizzaBaseCost) AS Profit,
-	concat(MONTH(OrderInfoTime), '/', YEAR(OrderInfoTime)) AS OrderMonth
+    SUM(PizzaBasePrice-PizzaBaseCost) AS Profit,
+	CONCAT(MONTH(OrderInfoTime), '/', YEAR(OrderInfoTime)) AS OrderMonth
 FROM pizza P
 JOIN orderinfo O ON P.PizzaOrderId=O.OrderInfoId
 GROUP BY PizzaCrustType, PizzaSize
-ORDER BY Profit DESC
+ORDER BY Profit DESC;
 
 
 /* 
@@ -45,4 +45,22 @@ SELECT ToppingName, SUM(COALESCE(PizzaToppingQuantity, 0)) AS ToppingCount
 FROM topping T
 LEFT JOIN pizzatopping PT ON T.ToppingId=PT.PizzaToppingToppingId
 GROUP BY ToppingId
-ORDER BY ToppingCount DESC
+ORDER BY ToppingCount DESC;
+
+/*
+    ProfitByOrderType:
+    A summary of the profit for each of the three types of orders by month 
+    with a grand total over all the orders at the pizzeria ordered by 
+    customer type and profit.
+*/
+
+CREATE VIEW ProfitByOrderType AS 
+
+SELECT 
+	OrderInfoType AS customerType,
+    CONCAT(MONTH(OrderInfoTime), '/', YEAR(OrderInfoTime)) AS OrderMonth,
+    SUM(OrderInfoPrice) AS TotalOrderPrice,
+    SUM(OrderInfoCost) AS TotalOrderPrice,
+    SUM(OrderInfoPrice-OrderInfoCost) AS TotalProfit
+FROM orderinfo O
+GROUP BY OrderInfoType, OrderMonth;
