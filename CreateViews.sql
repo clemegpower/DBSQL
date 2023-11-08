@@ -13,3 +13,20 @@ should match once you have populated the database with the orders and data speci
 below. You must include a “SELECT * FROM …” command for each of the views. Name
 this file “CreateViews.sql”
 */
+
+/* ProfitByPizza View:
+    a summary of the profit by pizza size and crust type over a
+    selected time period ordered by profit from most profitable to least profitable
+*/
+
+CREATE VIEW ProfitByPizza AS
+
+SELECT 
+	PizzaCrustType AS 'Crust', 
+    PizzaSize AS 'Type', 
+    sum(PizzaBasePrice-PizzaBaseCost) AS Profit,
+	concat(MONTH(OrderInfoTime), '/', YEAR(OrderInfoTime)) AS OrderMonth
+FROM pizza P
+JOIN orderinfo O ON P.PizzaOrderId=O.OrderInfoId
+GROUP BY PizzaCrustType, PizzaSize
+ORDER BY Profit DESC
