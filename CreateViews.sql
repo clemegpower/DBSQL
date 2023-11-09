@@ -58,9 +58,19 @@ CREATE VIEW ProfitByOrderType AS
 
 SELECT 
 	OrderInfoType AS customerType,
-    CONCAT(MONTH(OrderInfoTime), '/', YEAR(OrderInfoTime)) AS OrderMonth,
+    date_format(OrderInfoTime, '%c/%Y') AS OrderMonth,
     SUM(OrderInfoPrice) AS TotalOrderPrice,
-    SUM(OrderInfoCost) AS TotalOrderPrice,
+    SUM(OrderInfoCost) AS TotalOrderCost,
     SUM(OrderInfoPrice-OrderInfoCost) AS TotalProfit
 FROM orderinfo O
-GROUP BY OrderInfoType, OrderMonth;
+GROUP BY customerType, OrderMonth
+
+UNION
+
+SELECT 
+	NULL, 
+	'Grand Total',
+	SUM(OrderInfoPrice) AS TotalOrderPrice,
+    SUM(OrderInfoCost) AS TotalOrderCost,
+    SUM(OrderInfoPrice-OrderInfoCost) AS TotalProfit
+FROM orderinfo
