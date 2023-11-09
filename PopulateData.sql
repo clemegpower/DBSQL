@@ -6,6 +6,7 @@ make it easier, but there’s not a way without knowing your specific database d
 and Paste will be your friend. Name this file “PopulateData.sql”
 */
 
+USE cpsc4620project;
 
 /*
 Inserting into topping table

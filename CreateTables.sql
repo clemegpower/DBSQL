@@ -5,6 +5,10 @@ Run the SQL script in MySQL to create your database. This script should include 
 create the database schema. Name this file “CreateTables.sql”
 */
 
+CREATE SCHEMA cpsc4620project;
+
+USE cpsc4620project;
+
 CREATE TABLE base (
     BasePizzaSize varchar(10),
     BaseCrustType varchar(20),

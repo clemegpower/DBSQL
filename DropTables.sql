@@ -5,6 +5,8 @@ everything. Steps 3 and 4 will make it easier to grade your submission as well. 
 “DropTables.sql”
 */
 
+USE cpsc4620project;
+
 DROP TABLE orderdiscount;
 DROP TABLE pizzadiscount;
 DROP TABLE pizzatopping;
@@ -17,3 +19,5 @@ DROP TABLE discount;
 DROP TABLE customer;
 DROP TABLE topping;
 DROP TABLE base;
+
+DROP SCHEMA cpsc4620project;

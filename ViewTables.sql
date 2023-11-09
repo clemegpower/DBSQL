@@ -5,6 +5,8 @@ your database. Name this file “ViewTables.sql”
 
 */
 
+USE cpsc4620project;
+
 SELECT * FROM pizza;
 SELECT * FROM orderinfo;
 SELECT * FROM dinein;

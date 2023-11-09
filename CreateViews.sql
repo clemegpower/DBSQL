@@ -14,6 +14,8 @@ below. You must include a “SELECT * FROM …” command for each of the views.
 this file “CreateViews.sql”
 */
 
+USE cpsc4620project;
+
 /* 
     ProfitByPizza View:
     A summary of the profit by pizza size and crust type over a selected time
