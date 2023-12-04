@@ -487,7 +487,7 @@ public final class DBNinja {
 		 * 
 		 */
 		String cname1 = "";
-		String query = "Select FName, LName From customer WHERE CustID=" + CustID + ";";
+		String query = "Select CustomerFName, CustomerLName From customer WHERE CustomerId=" + CustID + ";";
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 		
@@ -504,7 +504,7 @@ public final class DBNinja {
 		PreparedStatement os;
 		ResultSet rset2;
 		String query2;
-		query2 = "Select FName, LName From customer WHERE CustID=?;";
+		query2 = "Select CustomerFName, CustomerLName From customer WHERE CustomerId=?;";
 		os = conn.prepareStatement(query2);
 		os.setInt(1, CustID);
 		rset2 = os.executeQuery();

@@ -330,8 +330,8 @@ public class Menu {
 		while (want_toppings != "-1") {
 			System.out.println("Available Toppings:");
 			//DBNinja.getToppingList();
-			String fname = DBNinja.getCustomerName(1);
-			System.out.println(fname);
+			//String fname = DBNinja.getCustomerName(1);
+			//System.out.println(fname);
 			System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
 			topping_choice = input.nextInt(); 
 			System.out.println("Do you want to add extra topping? Enter y/n");
