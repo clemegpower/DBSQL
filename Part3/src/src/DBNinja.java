@@ -62,8 +62,8 @@ public final class DBNinja {
 		 * the necessary data for the delivery, dinein, and pickup tables
 		 * 
 		 */
-		conn.close();
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static void addPizza(Pizza p) throws SQLException, IOException {
@@ -75,8 +75,8 @@ public final class DBNinja {
 		 * 
 		 */
 
-		conn.close();
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static void useTopping(Pizza p, Topping t, boolean isDoubled) throws SQLException, IOException // this method
@@ -111,6 +111,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static void usePizzaDiscount(Pizza p, Discount d) throws SQLException, IOException {
@@ -122,6 +123,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static void useOrderDiscount(Order o, Discount d) throws SQLException, IOException {
@@ -134,6 +136,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static void addCustomer(Customer c) throws SQLException, IOException {
@@ -144,6 +147,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static void completeOrder(Order o) throws SQLException, IOException {
@@ -155,6 +159,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static ArrayList<Order> getOrders(boolean openOnly) throws SQLException, IOException {
@@ -173,6 +178,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 		return null;
 	}
 
@@ -205,6 +211,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 		return null;
 	}
 
@@ -229,6 +236,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 		return null;
 	}
 
@@ -253,6 +261,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 		return null;
 	}
 
@@ -275,6 +284,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static double getBaseCustPrice(String size, String crust) throws SQLException, IOException {
@@ -285,6 +295,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 		return 0.0;
 	}
 
@@ -296,6 +307,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 		return 0.0;
 	}
 
@@ -333,6 +345,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static void printProfitByPizzaReport() throws SQLException, IOException {
@@ -347,6 +360,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static void printProfitByOrderType() throws SQLException, IOException {
@@ -361,6 +375,7 @@ public final class DBNinja {
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
 	}
 
 	public static String getCustomerName(int CustID) throws SQLException, IOException {
