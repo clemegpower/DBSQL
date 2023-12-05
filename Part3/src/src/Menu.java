@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-
 /*
  * This file is where the front end magic happens.
  * 
@@ -30,11 +29,11 @@ public class Menu {
 	public static void main(String[] args) throws SQLException, IOException {
 
 		System.out.println("Welcome to Pizzas-R-Us!");
-		
+
 		int menu_option = 0;
 
 		// present a menu of options and take their selection
-		
+
 		PrintMenu();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String option = reader.readLine();
@@ -42,31 +41,31 @@ public class Menu {
 
 		while (menu_option != 9) {
 			switch (menu_option) {
-			case 1:// enter order
-				EnterOrder();
-				break;
-			case 2:// view customers
-				viewCustomers();
-				break;
-			case 3:// enter customer
-				EnterCustomer();
-				break;
-			case 4:// view order
-				// open/closed/date
-				ViewOrders();
-				break;
-			case 5:// mark order as complete
-				MarkOrderAsComplete();
-				break;
-			case 6:// view inventory levels
-				ViewInventoryLevels();
-				break;
-			case 7:// add to inventory
-				AddInventory();
-				break;
-			case 8:// view reports
-				PrintReports();
-				break;
+				case 1:// enter order
+					EnterOrder();
+					break;
+				case 2:// view customers
+					viewCustomers();
+					break;
+				case 3:// enter customer
+					EnterCustomer();
+					break;
+				case 4:// view order
+						// open/closed/date
+					ViewOrders();
+					break;
+				case 5:// mark order as complete
+					MarkOrderAsComplete();
+					break;
+				case 6:// view inventory levels
+					ViewInventoryLevels();
+					break;
+				case 7:// add to inventory
+					AddInventory();
+					break;
+				case 8:// view reports
+					PrintReports();
+					break;
 			}
 			PrintMenu();
 			option = reader.readLine();
@@ -76,20 +75,19 @@ public class Menu {
 	}
 
 	// allow for a new order to be placed
-	public static void EnterOrder() throws SQLException, IOException 
-	{
+	public static void EnterOrder() throws SQLException, IOException {
 
 		/*
 		 * EnterOrder should do the following:
 		 * 
 		 * Ask if the order is delivery, pickup, or dinein
-		 *   if dine in....ask for table number
-		 *   if pickup...
-		 *   if delivery...
+		 * if dine in....ask for table number
+		 * if pickup...
+		 * if delivery...
 		 * 
 		 * Then, build the pizza(s) for the order (there's a method for this)
-		 *  until there are no more pizzas for the order
-		 *  add the pizzas to the order
+		 * until there are no more pizzas for the order
+		 * add the pizzas to the order
 		 *
 		 * Apply order discounts as needed (including to the DB)
 		 * 
@@ -100,189 +98,161 @@ public class Menu {
 
 		Scanner input = new Scanner(System.in);
 
-		int order_ID = 6; //need to get this value via sql or autoincrement? 
+		int order_ID = 6; // need to get this value via sql or autoincrement?
 
-		 // User Input Prompts...
-		System.out.println("Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
+		// User Input Prompts...
+		System.out.println(
+				"Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
 		int order_type = input.nextInt();
 		if (order_type == 1) {
 			System.out.println("What is the table number for this order?");
 			int table_num = input.nextInt();
-		}
-		else if (order_type == 2 || order_type == 3) {
+		} else if (order_type == 2 || order_type == 3) {
 			System.out.println("Is this order for an existing customer? Answer y/n: ");
 			String existing_cust = input.next();
 			if (existing_cust == "y") {
 				System.out.println("Here's a list of the current customers: ");
 				viewCustomers();
 				System.out.println("Which customer is this order for? Enter ID Number:");
-				int id_num = input.nextInt(); 
-			}
-			else if (existing_cust =="n") {
+				int id_num = input.nextInt();
+			} else if (existing_cust == "n") {
 				EnterCustomer();
 				System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
 				System.out.println("What is the Street for this order? (e.g., Smile Street)");
 				System.out.println("What is the City for this order? (e.g., Greenville)");
 				System.out.println("What is the State for this order? (e.g., SC)");
 				System.out.println("What is the Zip Code for this order? (e.g., 20605)");
-			}
-			else {
+			} else {
 				System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
 			}
-		}
-		else {
-			//throw error or reprompt
+		} else {
+			// throw error or reprompt
 		}
 		String more_pizza = "1";
 		String more_discounts = "1";
 		System.out.println("Let's build a pizza!");
 		while (more_pizza != "-1") {
-			buildPizza(order_ID); 
-			System.out.println("Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
+			buildPizza(order_ID);
+			System.out.println(
+					"Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
 			more_pizza = input.next();
 		}
 		System.out.println("Do you want to add discounts to this order? Enter y/n?");
 		while (more_discounts != "-1") {
-			System.out.println("Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
+			System.out.println(
+					"Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 			more_discounts = input.next();
 		}
-	
 
-		
-		
-		
 		System.out.println("Finished adding order...Returning to menu...");
 	}
-	
-	
-	public static void viewCustomers() throws SQLException, IOException 
-	{
+
+	public static void viewCustomers() throws SQLException, IOException {
 		/*
-		 * Simply print out all of the customers from the database. 
+		 * Simply print out all of the customers from the database.
 		 */
-		String sql = "SELECT * FROM CUSTOMERS"; 
-		
-		
-		
-		
-		
-		
+		String sql = "SELECT * FROM CUSTOMERS";
+
 	}
-	
 
 	// Enter a new customer in the database
-	public static void EnterCustomer() throws SQLException, IOException 
-	{
+	public static void EnterCustomer() throws SQLException, IOException {
 		/*
 		 * Ask for the name of the customer:
-		 *   First Name <space> Last Name
+		 * First Name <space> Last Name
 		 * 
-		 * Ask for the  phone number.
-		 *   (##########) (No dash/space)
+		 * Ask for the phone number.
+		 * (##########) (No dash/space)
 		 * 
 		 * Once you get the name and phone number, add it to the DB
 		 */
-		
+
 		// User Input Prompts...
 		Scanner input = new Scanner(System.in);
-		 System.out.println("What is this customer's name (first <space> last");
-		 String [] name;
-		 String first_name = input.next();
-		 String last_name = "";
-		
-		 System.out.println("What is this customer's phone number (##########) (No dash/space)");
-		 String phone_num = input.next();
+		System.out.println("What is this customer's name (first <space> last");
+		String[] name;
+		String first_name = input.next();
+		String last_name = "";
 
-		 Customer cust = new Customer(1, first_name, last_name, phone_num);
- 
+		System.out.println("What is this customer's phone number (##########) (No dash/space)");
+		String phone_num = input.next();
+
+		Customer cust = new Customer(1, first_name, last_name, phone_num);
 
 	}
 
 	// View any orders that are not marked as completed
-	public static void ViewOrders() throws SQLException, IOException 
-	{
-		/*  
-		* This method allows the user to select between three different views of the Order history:
-		* The program must display:
-		* a.	all open orders
-		* b.	all completed orders 
-		* c.	all the orders (open and completed) since a specific date (inclusive)
-		* 
-		* After displaying the list of orders (in a condensed format) must allow the user to select a specific order for viewing its details.  
-		* The details include the full order type information, the pizza information (including pizza discounts), and the order discounts.
-		* 
-		*/ 
-			
-		
+	public static void ViewOrders() throws SQLException, IOException {
+		/*
+		 * This method allows the user to select between three different views of the
+		 * Order history:
+		 * The program must display:
+		 * a. all open orders
+		 * b. all completed orders
+		 * c. all the orders (open and completed) since a specific date (inclusive)
+		 * 
+		 * After displaying the list of orders (in a condensed format) must allow the
+		 * user to select a specific order for viewing its details.
+		 * The details include the full order type information, the pizza information
+		 * (including pizza discounts), and the order discounts.
+		 * 
+		 */
+
 		// User Input Prompts...
-		System.out.println("Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
+		System.out.println(
+				"Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
 		System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
 		System.out.println("I don't understand that input, returning to menu");
 		System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 		System.out.println("Incorrect entry, returning to menu.");
 		System.out.println("No orders to display, returning to menu.");
 
-
-
 	}
 
-	
 	// When an order is completed, we need to make sure it is marked as complete
-	public static void MarkOrderAsComplete() throws SQLException, IOException 
-	{
+	public static void MarkOrderAsComplete() throws SQLException, IOException {
 		/*
-		 * All orders that are created through java (part 3, not the orders from part 2) should start as incomplete
+		 * All orders that are created through java (part 3, not the orders from part 2)
+		 * should start as incomplete
 		 * 
 		 * When this method is called, you should print all of the "opoen" orders marked
-		 * and allow the user to choose which of the incomplete orders they wish to mark as complete
+		 * and allow the user to choose which of the incomplete orders they wish to mark
+		 * as complete
 		 * 
 		 */
-		
-		
-		
+
 		// User Input Prompts...
 		System.out.println("There are no open orders currently... returning to menu...");
 		System.out.println("Which order would you like mark as complete? Enter the OrderID: ");
 		System.out.println("Incorrect entry, not an option");
 
-		
-		
-
 	}
 
-	public static void ViewInventoryLevels() throws SQLException, IOException 
-	{
+	public static void ViewInventoryLevels() throws SQLException, IOException {
 		/*
 		 * Print the inventory. Display the topping ID, name, and current inventory
-		*/
-		
-		
-		
-		
+		 */
+
+		DBNinja.printInventory();
+
 	}
 
-
-	public static void AddInventory() throws SQLException, IOException 
-	{
+	public static void AddInventory() throws SQLException, IOException {
 		/*
-		 * This should print the current inventory and then ask the user which topping (by ID) they want to add more to and how much to add
+		 * This should print the current inventory and then ask the user which topping
+		 * (by ID) they want to add more to and how much to add
 		 */
-		
-		
+
 		// User Input Prompts...
 		System.out.println("Which topping do you want to add inventory to? Enter the number: ");
 		System.out.println("How many units would you like to add? ");
 		System.out.println("Incorrect entry, not an option");
-	
-		
-		
-		
+
 	}
 
 	// A method that builds a pizza. Used in our add new order method
-	public static Pizza buildPizza(int orderID) throws SQLException, IOException 
-	{
-		
+	public static Pizza buildPizza(int orderID) throws SQLException, IOException {
+
 		/*
 		 * This is a helper method for first menu option.
 		 * 
@@ -290,7 +260,8 @@ public class Menu {
 		 * 
 		 * Once the pizza is created, it should be added to the DB.
 		 * 
-		 * We also need to add toppings to the pizza. (Which means we not only need to add toppings here, but also our bridge table)
+		 * We also need to add toppings to the pizza. (Which means we not only need to
+		 * add toppings here, but also our bridge table)
 		 * 
 		 * We then need to add pizza discounts (again, to here and to the database)
 		 * 
@@ -298,7 +269,7 @@ public class Menu {
 		 */
 		Scanner input = new Scanner(System.in);
 		Pizza ret = null;
-		
+
 		// User Input Prompts...
 		// System.out.println("What size is the pizza?");
 		// System.out.println("1."+DBNinja.size_s);
@@ -307,11 +278,11 @@ public class Menu {
 		// System.out.println("4."+DBNinja.size_xl);
 		// System.out.println("Enter the corresponding number: ");
 		// int crust = input.nextInt();
-		// String crust_size; 
+		// String crust_size;
 		// if (crust == 1) ret.setSize(DBNinja.size_s);
 		// else if (crust == 2) ret.setSize(DBNinja.size_m);
 		// else if (crust == 3) ret.setSize(DBNinja.size_l);
-		// else ret.setSize(DBNinja.size_xl); 
+		// else ret.setSize(DBNinja.size_xl);
 
 		// System.out.println("What crust for this pizza?");
 		// System.out.println("1."+DBNinja.crust_thin);
@@ -320,52 +291,53 @@ public class Menu {
 		// System.out.println("4."+DBNinja.crust_gf);
 		// System.out.println("Enter the corresponding number: ");
 		// crust = input.nextInt();
-		// String crust_type; 
+		// String crust_type;
 		// if (crust == 1) ret.setCrustType(DBNinja.crust_thin);
 		// else if (crust == 2) ret.setCrustType(DBNinja.crust_orig);
 		// else if (crust == 3) ret.setCrustType(DBNinja.crust_pan);
-		// else ret.setCrustType(DBNinja.crust_gf); 
+		// else ret.setCrustType(DBNinja.crust_gf);
 		String want_toppings = " ";
 		int topping_choice = 0;
 		while (want_toppings != "-1") {
 			System.out.println("Available Toppings:");
-			//DBNinja.getToppingList();
-			//String fname = DBNinja.getCustomerName(1);
-			//System.out.println(fname);
+			// DBNinja.getToppingList();
+			// String fname = DBNinja.getCustomerName(1);
+			// System.out.println(fname);
 			System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
-			topping_choice = input.nextInt(); 
+			topping_choice = input.nextInt();
 			System.out.println("Do you want to add extra topping? Enter y/n");
-			String extra = input.next(); 
+			String extra = input.next();
 			System.out.println("We don't have enough of that topping to add it...");
 		}
 		System.out.println("Do you want to add discounts to this Pizza? Enter y/n?");
-		System.out.println("Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
+		System.out.println(
+				"Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 		System.out.println("Do you want to add more discounts to this Pizza? Enter y/n?");
-	//ret.setCrustType(crust_type);
-		
-		//ret = new Pizza(1, crust_size, crust_type, )
-		
-		
+		// ret.setCrustType(crust_type);
+
+		// ret = new Pizza(1, crust_size, crust_type, )
+
 		return ret;
 	}
-	
-	
-	public static void PrintReports() throws SQLException, NumberFormatException, IOException
-	{
+
+	public static void PrintReports() throws SQLException, NumberFormatException, IOException {
 		/*
-		 * This method asks the use which report they want to see and calls the DBNinja method to print the appropriate report.
+		 * This method asks the use which report they want to see and calls the DBNinja
+		 * method to print the appropriate report.
 		 * 
 		 */
 
 		// User Input Prompts...
-		System.out.println("Which report do you wish to print? Enter\n(a) ToppingPopularity\n(b) ProfitByPizza\n(c) ProfitByOrderType:");
+		System.out.println(
+				"Which report do you wish to print? Enter\n(a) ToppingPopularity\n(b) ProfitByPizza\n(c) ProfitByOrderType:");
 		System.out.println("I don't understand that input... returning to menu...");
 
 	}
 
-	//Prompt - NO CODE SHOULD TAKE PLACE BELOW THIS LINE
+	// Prompt - NO CODE SHOULD TAKE PLACE BELOW THIS LINE
 	// DO NOT EDIT ANYTHING BELOW HERE, THIS IS NEEDED TESTING.
-	// IF YOU EDIT SOMETHING BELOW, IT BREAKS THE AUTOGRADER WHICH MEANS YOUR GRADE WILL BE A 0 (zero)!!
+	// IF YOU EDIT SOMETHING BELOW, IT BREAKS THE AUTOGRADER WHICH MEANS YOUR GRADE
+	// WILL BE A 0 (zero)!!
 
 	public static void PrintMenu() {
 		System.out.println("\n\nPlease enter a menu option:");
@@ -387,7 +359,6 @@ public class Menu {
 
 	public final static String autograder_seed = "6f1b7ea9aac470402d48f7916ea6a010";
 
-	
 	private static void autograder_compilation_check() {
 
 		try {
@@ -432,7 +403,4 @@ public class Menu {
 		}
 	}
 
-
 }
-
-
