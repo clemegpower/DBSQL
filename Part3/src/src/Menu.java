@@ -98,7 +98,11 @@ public class Menu {
 
 		Scanner input = new Scanner(System.in);
 
-		int order_ID = 6; // need to get this value via sql or autoincrement?
+		Order newOrder = null;
+		int order_ID = -1; // need to get this value via sql or autoincrement?
+		int cust_ID = -1;
+		int id_num = -1;
+		int table_num = -1;
 
 		// User Input Prompts...
 		System.out.println(
@@ -106,7 +110,7 @@ public class Menu {
 		int order_type = input.nextInt();
 		if (order_type == 1) {
 			System.out.println("What is the table number for this order?");
-			int table_num = input.nextInt();
+			table_num = input.nextInt();
 		} else if (order_type == 2 || order_type == 3) {
 			System.out.println("Is this order for an existing customer? Answer y/n: ");
 			String existing_cust = input.next();
@@ -114,7 +118,7 @@ public class Menu {
 				System.out.println("Here's a list of the current customers: ");
 				viewCustomers();
 				System.out.println("Which customer is this order for? Enter ID Number:");
-				int id_num = input.nextInt();
+				id_num = input.nextInt();
 			} else if (existing_cust == "n") {
 				EnterCustomer();
 				System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
@@ -128,11 +132,20 @@ public class Menu {
 		} else {
 			// throw error or reprompt
 		}
+
+		int totalBusPrice = 0;
+		int totalCustPrice = 0;
+		ArrayList<Pizza> pizzaList = new ArrayList<Pizza>();
+
 		String more_pizza = "1";
 		String more_discounts = "1";
 		System.out.println("Let's build a pizza!");
 		while (more_pizza != "-1") {
-			buildPizza(order_ID);
+			Pizza newPizza = buildPizza(order_ID);
+			pizzaList.add(newPizza);
+			totalBusPrice += newPizza.getBusPrice();
+			totalCustPrice += newPizza.getCustPrice();
+
 			System.out.println(
 					"Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
 			more_pizza = input.next();
@@ -144,15 +157,24 @@ public class Menu {
 			more_discounts = input.next();
 		}
 
+		DBNinja.addOrder(newOrder);
+
+		// Finished
 		System.out.println("Finished adding order...Returning to menu...");
+		input.close();
 	}
 
 	public static void viewCustomers() throws SQLException, IOException {
 		/*
 		 * Simply print out all of the customers from the database.
 		 */
-		String sql = "SELECT * FROM CUSTOMERS";
-
+		ArrayList<Customer> customerList = DBNinja.getCustomerList();
+		for (int i = 0; i < customerList.size(); i++) {
+			Customer c = customerList.get(i);
+			System.out.println("CustId=" + c.getCustID()
+					+ " | Name= " + c.getFName() + " " + c.getLName()
+					+ ", Phone= " + c.getPhone());
+		}
 	}
 
 	// Enter a new customer in the database
@@ -271,38 +293,49 @@ public class Menu {
 		Pizza ret = null;
 
 		// User Input Prompts...
-		// System.out.println("What size is the pizza?");
-		// System.out.println("1."+DBNinja.size_s);
-		// System.out.println("2."+DBNinja.size_m);
-		// System.out.println("3."+DBNinja.size_l);
-		// System.out.println("4."+DBNinja.size_xl);
-		// System.out.println("Enter the corresponding number: ");
-		// int crust = input.nextInt();
-		// String crust_size;
-		// if (crust == 1) ret.setSize(DBNinja.size_s);
-		// else if (crust == 2) ret.setSize(DBNinja.size_m);
-		// else if (crust == 3) ret.setSize(DBNinja.size_l);
-		// else ret.setSize(DBNinja.size_xl);
+		// Choose pizza size
+		System.out.println("What size is the pizza?");
+		System.out.println("1." + DBNinja.size_s);
+		System.out.println("2." + DBNinja.size_m);
+		System.out.println("3." + DBNinja.size_l);
+		System.out.println("4." + DBNinja.size_xl);
+		System.out.println("Enter the corresponding number: ");
+		int crust = input.nextInt();
+		String crust_size = "";
+		if (crust == 1) {
+			crust_size = DBNinja.size_s;
+		} else if (crust == 2) {
+			crust_size = DBNinja.size_m;
+		} else if (crust == 3) {
+			crust_size = DBNinja.size_l;
+		} else {
+			crust_size = DBNinja.size_xl;
+		}
+		// Choose pizza crust
+		System.out.println("What crust for this pizza?");
+		System.out.println("1." + DBNinja.crust_thin);
+		System.out.println("2." + DBNinja.crust_orig);
+		System.out.println("3." + DBNinja.crust_pan);
+		System.out.println("4." + DBNinja.crust_gf);
+		System.out.println("Enter the corresponding number: ");
+		crust = input.nextInt();
+		String crust_type = "";
+		if (crust == 1) {
+			crust_type = DBNinja.crust_thin;
+		} else if (crust == 2) {
+			crust_type = DBNinja.crust_orig;
+		} else if (crust == 3) {
+			crust_type = DBNinja.crust_pan;
+		} else {
+			crust_type = DBNinja.crust_gf;
+		}
 
-		// System.out.println("What crust for this pizza?");
-		// System.out.println("1."+DBNinja.crust_thin);
-		// System.out.println("2."+DBNinja.crust_orig);
-		// System.out.println("3."+DBNinja.crust_pan);
-		// System.out.println("4."+DBNinja.crust_gf);
-		// System.out.println("Enter the corresponding number: ");
-		// crust = input.nextInt();
-		// String crust_type;
-		// if (crust == 1) ret.setCrustType(DBNinja.crust_thin);
-		// else if (crust == 2) ret.setCrustType(DBNinja.crust_orig);
-		// else if (crust == 3) ret.setCrustType(DBNinja.crust_pan);
-		// else ret.setCrustType(DBNinja.crust_gf);
-		String want_toppings = " ";
+		// Choose toppings
+		String want_toppings = "1";
 		int topping_choice = 0;
 		while (want_toppings != "-1") {
 			System.out.println("Available Toppings:");
-			// DBNinja.getToppingList();
-			// String fname = DBNinja.getCustomerName(1);
-			// System.out.println(fname);
+			DBNinja.getToppingList();
 			System.out.println("Which topping do you want to add? Enter the TopID. Enter -1 to stop adding toppings: ");
 			topping_choice = input.nextInt();
 			System.out.println("Do you want to add extra topping? Enter y/n");

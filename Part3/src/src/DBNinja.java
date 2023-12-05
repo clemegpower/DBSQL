@@ -62,6 +62,18 @@ public final class DBNinja {
 		 * the necessary data for the delivery, dinein, and pickup tables
 		 * 
 		 */
+
+		if (o instanceof DineinOrder) {
+
+		} else if (o instanceof DeliveryOrder) {
+
+		} else if (o instanceof PickupOrder) {
+
+		} else {
+			System.err.println("Error in 'addOrder': variable 'o' has invalid order type");
+			return;
+		}
+
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
 	}
@@ -235,9 +247,25 @@ public final class DBNinja {
 		 * 
 		 */
 
+		ArrayList<Customer> customerList = new ArrayList<Customer>();
+
+		String query = "SELECT * FROM customer;";
+		Statement stmt = conn.createStatement();
+		ResultSet rset = stmt.executeQuery(query);
+
+		while (rset.next()) {
+			Customer newCustomer = new Customer(
+					rset.getInt("CustomerId"),
+					rset.getString("CustomerFName"),
+					rset.getString("CustomerLName"),
+					rset.getString("CustomerPhone"));
+
+			customerList.add(newCustomer);
+		}
+
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
-		return null;
+		return customerList;
 	}
 
 	public static Customer findCustomerByPhone(String phoneNumber) {
