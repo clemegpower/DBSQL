@@ -1,10 +1,11 @@
-public class Discount
-{
+package cpsc4620;
+
+public class Discount {
 	private int DiscountID;
 	private String DiscountName;
 	private double Amount;
 	private boolean isPercent;
-	
+
 	public Discount(int discountID, String discountName, double amount, boolean isPercent) {
 		DiscountID = discountID;
 		DiscountName = discountName;
@@ -49,5 +50,5 @@ public class Discount
 		return "DiscountID=" + DiscountID + " | " + DiscountName + ", Amount= " + Amount
 				+ ", isPercent= " + isPercent;
 	}
-	
+
 }

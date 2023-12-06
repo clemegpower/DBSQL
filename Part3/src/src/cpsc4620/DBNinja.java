@@ -1,3 +1,5 @@
+package cpsc4620;
+
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
@@ -287,10 +289,32 @@ public final class DBNinja {
 		 * Don't forget to order the data coming from the database appropriately.
 		 * 
 		 */
+		ArrayList<Topping> toppingList = new ArrayList<Topping>();
+
+		String query = "SELECT * FROM topping";
+		Statement stmt = conn.createStatement();
+		ResultSet rset = stmt.executeQuery(query);
+
+		while (rset.next()) {
+			int toppingId = rset.getInt("ToppingId");
+			String toppingName = rset.getString("ToppingName");
+			double pricePer = rset.getDouble("ToppingPricePer");
+			double costPer = rset.getDouble("ToppingCostPer");
+			int currInventory = rset.getInt("ToppingCurrentInventory");
+			int minInventory = rset.getInt("ToppingMinInventory");
+			int unitsSmall = rset.getInt("ToppingUnitsSmall");
+			int unitsMed = rset.getInt("ToppingUnitsMedium");
+			int unitsLarge = rset.getInt("ToppingUnitsLarge");
+			int unitsXL = rset.getInt("ToppingUnitsXLarge");
+
+			Topping newTopping = new Topping(toppingId, toppingName, unitsSmall, unitsMed, unitsLarge, unitsXL,
+					pricePer, costPer, minInventory, currInventory);
+			toppingList.add(newTopping);
+		}
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
-		return null;
+		return toppingList;
 	}
 
 	public static Topping findToppingByName(String name) {
@@ -321,10 +345,23 @@ public final class DBNinja {
 		 * Query the database fro the base customer price for that size and crust pizza.
 		 * 
 		 */
+		double baseCustPrice = 0.0;
+
+		PreparedStatement os;
+		ResultSet rset;
+		String query;
+		query = "SELECT BasePrice FROM base WHERE BasePizzaSize=? AND BaseCrustType=?;";
+		os = conn.prepareStatement(query);
+		os.setString(1, size);
+		os.setString(2, crust);
+		rset = os.executeQuery();
+
+		rset.next();
+		baseCustPrice = rset.getDouble("BasePrice");
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
-		return 0.0;
+		return baseCustPrice;
 	}
 
 	public static double getBaseBusPrice(String size, String crust) throws SQLException, IOException {
@@ -334,9 +371,23 @@ public final class DBNinja {
 		 * 
 		 */
 
+		double baseBusPrice = 0.0;
+
+		PreparedStatement os;
+		ResultSet rset;
+		String query;
+		query = "SELECT BaseCost FROM base WHERE BasePizzaSize=? AND BaseCrustType=?;";
+		os = conn.prepareStatement(query);
+		os.setString(1, size);
+		os.setString(2, crust);
+		rset = os.executeQuery();
+
+		rset.next();
+		baseBusPrice = rset.getDouble("BaseCost");
+
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
-		return 0.0;
+		return baseBusPrice;
 	}
 
 	public static void printInventory() throws SQLException, IOException {
@@ -352,9 +403,12 @@ public final class DBNinja {
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 
-		System.out.println("ID\tName\tCurINVT");
+		String formatString = "%-5s%-18s%-5s";
+		System.out.println(String.format(formatString, "ID", "Name", "CurINVT"));
 		while (rset.next()) {
-			System.out.println(rset.getString(1) + "\t" + rset.getString(2) + "\t" + rset.getString(3));
+			String toppingOutput = String.format(formatString, rset.getString(1), rset.getString(2),
+					rset.getString(3));
+			System.out.println(toppingOutput);
 		}
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION

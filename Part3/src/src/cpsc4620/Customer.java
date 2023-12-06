@@ -1,5 +1,6 @@
-public class Customer
-{
+package cpsc4620;
+
+public class Customer {
 	private int CustID;
 	private String FName;
 	private String LName;
@@ -29,7 +30,9 @@ public class Customer
 		return Phone;
 	}
 
-	public String getAddress() { return Address; }
+	public String getAddress() {
+		return Address;
+	}
 
 	public void setCustID(int custID) {
 		CustID = custID;
@@ -47,14 +50,13 @@ public class Customer
 		Phone = phone;
 	}
 
-	public void setAddress (String street, String city, String state, String zip) {
+	public void setAddress(String street, String city, String state, String zip) {
 		Address = street + "/n" + city + "/n" + state + "/n" + zip;
 	}
 
 	@Override
 	public String toString() {
-		return "CustID=" + CustID + " | Name= " + FName +  " " + LName + ", Phone= " + Phone;
+		return "CustID=" + CustID + " | Name= " + FName + " " + LName + ", Phone= " + Phone;
 	}
-	
-	
+
 }

@@ -1,3 +1,5 @@
+package cpsc4620;
+
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,7 +23,6 @@ public class DBConnector {
     // Do not change the port. 3306 is the default MySQL port
     private static String url = "jdbc:mysql://dbproject3.ckzarqllnst8.us-east-1.rds.amazonaws.com";
     private static Connection conn;
-
 
     /**
      * This function will handle the connection to the database
