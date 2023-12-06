@@ -1,4 +1,4 @@
-package cpsc4620;
+
 
 import java.io.IOException;
 import java.sql.*;
@@ -89,6 +89,48 @@ public final class DBNinja {
 		 *
 		 */
 
+
+		ArrayList <Topping> toppingList = p.getToppings();
+		ArrayList<Discount> discountList = p.getDiscounts();
+		boolean[] isExtra =  p.getIsDoubleArray();
+		for (int i = 0; i < toppingList.size(); i++) {
+			String query1 = "insert into pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity) " +
+					"values (?,?,?)";
+			PreparedStatement topconn = conn.prepareStatement(query1);
+			if (isExtra[i] == true) {
+				topconn.setInt(3, 2);
+			}
+			else {
+				topconn.setInt(3, 1);
+			}
+			topconn.setInt(1, p.getPizzaID());
+			topconn.setInt(2, toppingList.get(i).getTopID());
+			topconn.executeUpdate();
+		}
+
+		//insert into pizzadiscount
+
+		for (int i = 0; i < discountList.size(); i++) {
+			String query2 = "insert into pizzadiscount (PizzaDiscountPizzaId, PizzaDiscountDiscountId) " +
+					"values (?,?)";
+			PreparedStatement disconn = conn.prepareStatement(query2);
+			disconn.setInt(1, p.getPizzaID());
+			disconn.setInt(2, discountList.get(i).getDiscountID());
+			disconn.executeUpdate();
+		}
+
+
+		//insert into pizza
+		String query3 = "insert into pizza (PizzaSize, PizzaState, PizzaBaseCost, PizzaOrderId, PizzaBasePrice) " +
+				"values (?,?,?,?,?)";
+		PreparedStatement stmt = conn.prepareStatement(query3);
+		stmt.setString(1, p.getSize());
+		stmt.setString(2, p.getPizzaState());
+		stmt.setDouble(3, p.getBusPrice());
+		stmt.setInt(4, p.getOrderID());
+		stmt.setDouble(5, p.getCustPrice());
+		stmt.executeUpdate();
+
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
 	}
@@ -136,6 +178,10 @@ public final class DBNinja {
 		 * What that means will be specific to your implementatinon.
 		 */
 		String query = "insert into pizzadiscount (PizzaDiscountPizza, PizzaDiscountDiscount) values (?,?)";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setInt(1, p.getPizzaID());
+		stmt.setInt(2, d.getDiscountID());
+		stmt.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -149,6 +195,12 @@ public final class DBNinja {
 		 * You might use this, you might not depending on where / how to want to update
 		 * this information in the dabast
 		 */
+
+		String query = "insert into orderdiscount (PizzaDiscountOrder, OrderDiscountDiscount) values (?,?)";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setInt(1, o.getOrderID());
+		stmt.setInt(2, d.getDiscountID());
+		stmt.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -180,7 +232,7 @@ public final class DBNinja {
 		 *
 		 */
 		int id_num = o.getOrderID();
-		String query = "update orderinfo set isCompleted = true where OrderInfoId = ?;";
+		String query = "update orderinfo set OrderInfoStatus = true where OrderInfoId = ?;";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setInt(1, id_num);
 		stmt.executeUpdate();
@@ -204,24 +256,24 @@ public final class DBNinja {
 		 *
 		 */
 
-		// here's my first attempt of the code
-		// ArrayList<Order> orderList = new ArrayList<Order>();
-		// Statement stmt = conn.createStatement();
-		// if (openOnly) {
-		// String query = "SELECT * FROM orderinfo WHERE isCompleted == 1";
-		// ResultSet rset = stmt.executeQuery(query);
-		//
-		// while (rset.next()) {
-		//
-		// Order newOrder = new Order(
-		// rset.getInt("OrderInfoId"),
-		//
-		// }
-		// }
-		// else {
-		// String query = "Select * from orderinfo";
-		// }
-		// orderList.add(newOrder);
+		//here's my first attempt of the code
+//		ArrayList<Order> orderList = new ArrayList<Order>();
+//		Statement stmt = conn.createStatement();
+//		if (openOnly) {
+//			String query = "SELECT * FROM orderinfo WHERE isCompleted == 1";
+//			ResultSet rset = stmt.executeQuery(query);
+//
+//			while (rset.next()) {
+//
+//				Order newOrder = new Order(
+//						rset.getInt("OrderInfoId"),
+//
+//			}
+//		}
+//		else {
+//			String query = "Select * from orderinfo";
+//		}
+		//orderList.add(newOrder);
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -234,6 +286,8 @@ public final class DBNinja {
 		 * then return an Order object for that order.
 		 * NOTE...there should ALWAYS be a "last order"!
 		 */
+
+
 
 		return null;
 	}
@@ -263,7 +317,7 @@ public final class DBNinja {
 		while (rset.next()) {
 			Double amount = rset.getDouble("DiscountPercent");
 
-			if (amount == 0.0) {
+			if (amount == 0.0){
 				amount = rset.getDouble("DiscountDollarAmt");
 			}
 
@@ -329,6 +383,8 @@ public final class DBNinja {
 		 * If it's not found....then return null
 		 *
 		 */
+
+
 
 		return null;
 	}
@@ -396,6 +452,7 @@ public final class DBNinja {
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
 	}
+
 
 	public static double getBaseCustPrice(String size, String crust) throws SQLException, IOException {
 		connect_to_db();
@@ -541,8 +598,7 @@ public final class DBNinja {
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 		String formatString = "%-18s%-18s%-18s%-18s%-10s";
-		System.out.println(String.format(formatString, "Order Type", "Order Month", "TotalOrderPrice", "TotalOrderCost",
-				"Profit"));
+		System.out.println(String.format(formatString, "Order Type", "Order Month", "TotalOrderPrice", "TotalOrderCost", "Profit"));
 		while (rset.next()) {
 			String type = rset.getString("customerType");
 			String date = rset.getString("OrderMonth");
@@ -551,7 +607,8 @@ public final class DBNinja {
 			Double profit = rset.getDouble("TotalProfit");
 			if (type == null) {
 				System.out.println(String.format(formatString, " ", date, price, cost, profit));
-			} else {
+			}
+			else {
 				System.out.println(String.format(formatString, type, date, price, cost, profit));
 			}
 		}
