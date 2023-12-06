@@ -1,4 +1,3 @@
-package cpsc4620;
 
 import java.io.IOException;
 import java.sql.*;
@@ -89,6 +88,46 @@ public final class DBNinja {
 		 *
 		 */
 
+		ArrayList<Topping> toppingList = p.getToppings();
+		ArrayList<Discount> discountList = p.getDiscounts();
+		boolean[] isExtra = p.getIsDoubleArray();
+		for (int i = 0; i < toppingList.size(); i++) {
+			String query1 = "insert into pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity) "
+					+
+					"values (?,?,?)";
+			PreparedStatement topconn = conn.prepareStatement(query1);
+			if (isExtra[i] == true) {
+				topconn.setInt(3, 2);
+			} else {
+				topconn.setInt(3, 1);
+			}
+			topconn.setInt(1, p.getPizzaID());
+			topconn.setInt(2, toppingList.get(i).getTopID());
+			topconn.executeUpdate();
+		}
+
+		// insert into pizzadiscount
+
+		for (int i = 0; i < discountList.size(); i++) {
+			String query2 = "insert into pizzadiscount (PizzaDiscountPizzaId, PizzaDiscountDiscountId) " +
+					"values (?,?)";
+			PreparedStatement disconn = conn.prepareStatement(query2);
+			disconn.setInt(1, p.getPizzaID());
+			disconn.setInt(2, discountList.get(i).getDiscountID());
+			disconn.executeUpdate();
+		}
+
+		// insert into pizza
+		String query3 = "insert into pizza (PizzaSize, PizzaState, PizzaBaseCost, PizzaOrderId, PizzaBasePrice) " +
+				"values (?,?,?,?,?)";
+		PreparedStatement stmt = conn.prepareStatement(query3);
+		stmt.setString(1, p.getSize());
+		stmt.setString(2, p.getPizzaState());
+		stmt.setDouble(3, p.getBusPrice());
+		stmt.setInt(4, p.getOrderID());
+		stmt.setDouble(5, p.getCustPrice());
+		stmt.executeUpdate();
+
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
 	}
@@ -136,6 +175,10 @@ public final class DBNinja {
 		 * What that means will be specific to your implementatinon.
 		 */
 		String query = "insert into pizzadiscount (PizzaDiscountPizza, PizzaDiscountDiscount) values (?,?)";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setInt(1, p.getPizzaID());
+		stmt.setInt(2, d.getDiscountID());
+		stmt.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -149,6 +192,12 @@ public final class DBNinja {
 		 * You might use this, you might not depending on where / how to want to update
 		 * this information in the dabast
 		 */
+
+		String query = "insert into orderdiscount (PizzaDiscountOrder, OrderDiscountDiscount) values (?,?)";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setInt(1, o.getOrderID());
+		stmt.setInt(2, d.getDiscountID());
+		stmt.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -180,7 +229,7 @@ public final class DBNinja {
 		 *
 		 */
 		int id_num = o.getOrderID();
-		String query = "update orderinfo set isCompleted = true where OrderInfoId = ?;";
+		String query = "update orderinfo set OrderInfoStatus = true where OrderInfoId = ?;";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setInt(1, id_num);
 		stmt.executeUpdate();
