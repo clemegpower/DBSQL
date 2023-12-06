@@ -1,4 +1,4 @@
-
+package cpsc4620;
 
 import java.io.IOException;
 import java.sql.*;
@@ -204,24 +204,24 @@ public final class DBNinja {
 		 *
 		 */
 
-		//here's my first attempt of the code
-//		ArrayList<Order> orderList = new ArrayList<Order>();
-//		Statement stmt = conn.createStatement();
-//		if (openOnly) {
-//			String query = "SELECT * FROM orderinfo WHERE isCompleted == 1";
-//			ResultSet rset = stmt.executeQuery(query);
-//
-//			while (rset.next()) {
-//
-//				Order newOrder = new Order(
-//						rset.getInt("OrderInfoId"),
-//
-//			}
-//		}
-//		else {
-//			String query = "Select * from orderinfo";
-//		}
-		//orderList.add(newOrder);
+		// here's my first attempt of the code
+		// ArrayList<Order> orderList = new ArrayList<Order>();
+		// Statement stmt = conn.createStatement();
+		// if (openOnly) {
+		// String query = "SELECT * FROM orderinfo WHERE isCompleted == 1";
+		// ResultSet rset = stmt.executeQuery(query);
+		//
+		// while (rset.next()) {
+		//
+		// Order newOrder = new Order(
+		// rset.getInt("OrderInfoId"),
+		//
+		// }
+		// }
+		// else {
+		// String query = "Select * from orderinfo";
+		// }
+		// orderList.add(newOrder);
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -234,8 +234,6 @@ public final class DBNinja {
 		 * then return an Order object for that order.
 		 * NOTE...there should ALWAYS be a "last order"!
 		 */
-
-
 
 		return null;
 	}
@@ -265,7 +263,7 @@ public final class DBNinja {
 		while (rset.next()) {
 			Double amount = rset.getDouble("DiscountPercent");
 
-			if (amount == 0.0){
+			if (amount == 0.0) {
 				amount = rset.getDouble("DiscountDollarAmt");
 			}
 
@@ -331,8 +329,6 @@ public final class DBNinja {
 		 * If it's not found....then return null
 		 *
 		 */
-
-
 
 		return null;
 	}
@@ -400,7 +396,6 @@ public final class DBNinja {
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
 	}
-
 
 	public static double getBaseCustPrice(String size, String crust) throws SQLException, IOException {
 		connect_to_db();
@@ -546,7 +541,8 @@ public final class DBNinja {
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 		String formatString = "%-18s%-18s%-18s%-18s%-10s";
-		System.out.println(String.format(formatString, "Order Type", "Order Month", "TotalOrderPrice", "TotalOrderCost", "Profit"));
+		System.out.println(String.format(formatString, "Order Type", "Order Month", "TotalOrderPrice", "TotalOrderCost",
+				"Profit"));
 		while (rset.next()) {
 			String type = rset.getString("customerType");
 			String date = rset.getString("OrderMonth");
@@ -555,8 +551,7 @@ public final class DBNinja {
 			Double profit = rset.getDouble("TotalProfit");
 			if (type == null) {
 				System.out.println(String.format(formatString, " ", date, price, cost, profit));
-			}
-			else {
+			} else {
 				System.out.println(String.format(formatString, type, date, price, cost, profit));
 			}
 		}

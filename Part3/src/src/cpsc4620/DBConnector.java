@@ -41,9 +41,7 @@ public class DBConnector {
 
             return null;
         }
-        System.out.println("Trying to get a connection");
         conn = DriverManager.getConnection(url + "/" + database_name, user, password);
-        System.out.println("Got a connection");
         return conn;
     }
 }

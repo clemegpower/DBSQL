@@ -1,3 +1,5 @@
+package cpsc4620;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -50,7 +52,7 @@ public class Menu {
 					EnterCustomer();
 					break;
 				case 4:// view order
-					// open/closed/date
+						// open/closed/date
 					ViewOrders();
 					break;
 				case 5:// mark order as complete
@@ -233,19 +235,15 @@ public class Menu {
 				"Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
 		String input = reader.readLine();
 		if (input.equals("a")) {
-			//display all orders
-		}
-		else if (input.equals("b")) {
-			//display all open orders
-		}
-		else if (input.equals("c")) {
-			//display all closed orders
-		}
-		else if (input.equals("d")) {
-			//display by certain date
+			// display all orders
+		} else if (input.equals("b")) {
+			// display all open orders
+		} else if (input.equals("c")) {
+			// display all closed orders
+		} else if (input.equals("d")) {
+			// display by certain date
 			System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
-		}
-		else {
+		} else {
 			System.out.println("I don't understand that input, returning to menu");
 		}
 		System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
@@ -268,7 +266,7 @@ public class Menu {
 
 		// User Input Prompts...
 		System.out.println("There are no open orders currently... returning to menu...");
-		//print the orders
+		// print the orders
 		System.out.println("Which order would you like mark as complete? Enter the OrderID: ");
 		Integer order_Id = Integer.parseInt(reader.readLine());
 		ArrayList<Order> orderList = DBNinja.getOrders(false);
@@ -312,7 +310,7 @@ public class Menu {
 		System.out.println("How many units would you like to add? ");
 		int quantity = Integer.parseInt(reader.readLine());
 		DBNinja.addToInventory(t, quantity);
-		//System.out.println("Incorrect entry, not an option");
+		// System.out.println("Incorrect entry, not an option");
 
 	}
 
@@ -443,7 +441,6 @@ public class Menu {
 			}
 		}
 
-
 		System.out.println("Do you want to add discounts to this Pizza? Enter y/n?");
 		String addDiscounts = reader.readLine();
 
@@ -488,14 +485,11 @@ public class Menu {
 
 		if (whichReport.equals("a")) {
 			DBNinja.printToppingPopReport();
-		}
-		else if (whichReport.equals("b")) {
+		} else if (whichReport.equals("b")) {
 			DBNinja.printProfitByPizzaReport();
-		}
-		else if (whichReport.equals("c")) {
+		} else if (whichReport.equals("c")) {
 			DBNinja.printProfitByOrderType();
-		}
-		else {
+		} else {
 			System.out.println("I don't understand that input... returning to menu...");
 		}
 
