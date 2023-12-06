@@ -219,8 +219,8 @@ discount for the pizza.
 */
 
 -- order id:1
-INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime)
-VALUES ("dinein", 20.75, 3.68, "2023-03-05T12:03:00");
+INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime, OrderInfoStatus)
+VALUES ("dinein", 20.75, 3.68, "2023-03-05T12:03:00", true);
 -- dine in 
 INSERT INTO dinein(DineInOrderId, DineInTableNum)
 VALUES (1, 21);
@@ -246,8 +246,8 @@ a small original crust pizza with Regular Cheese, Chicken and Banana Peppers (Pr
 */
 
 -- order id:2
-INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime)
-VALUES ("dinein", 19.78, 4.63, "2023-04-03T12:05:00");
+INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime, OrderInfoStatus)
+VALUES ("dinein", 19.78, 4.63, "2023-04-03T12:05:00", true);
 -- dine in order
 INSERT INTO dinein(DineInOrderId, DineInTableNum)
 VALUES (2, 4);
@@ -299,12 +299,12 @@ INSERT INTO customer(CustomerFName, CustomerLName, CustomerPhone)
 VALUES ("Andrew", "Wilkes-Krier", "8642545861");
 
 -- order id:3
-INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime)
-VALUES ("pickup", 89.28, 19.8, "2023-03-03T21:30:00");
+INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime, OrderInfoStatus)
+VALUES ("pickup", 89.28, 19.8, "2023-03-03T21:30:00", true);
 
 -- pickup order
-INSERT INTO pickup(PickupOrderId, PickupCustomerId)
-VALUES (3, 1);
+INSERT INTO pickup(PickupOrderId, PickupCustomerId, PickupIsPickedUp)
+VALUES (3, 1, true);
 
 -- pizzas
 -- id:4
@@ -372,8 +372,8 @@ SET CustomerStreet="115 Party Blvd", CustomerCity="Anderson", CustomerState="SC"
 WHERE CustomerId=1;
 
 -- order id:4
-INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime)
-VALUES ("delivery", 86.19, 23.62, "2023-04-20T19:11:00");
+INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime, OrderInfoStatus)
+VALUES ("delivery", 86.19, 23.62, "2023-04-20T19:11:00", true);
 
 -- delivery order
 INSERT INTO delivery(DeliveryOrderId, DeliveryCustomerId)
@@ -431,12 +431,12 @@ INSERT INTO customer(CustomerFName, CustomerLName, CustomerPhone)
 VALUES ("Matt", "Engers", "8644749953");
 
 -- order id:5
-INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime)
-VALUES ("pickup", 27.45, 7.88, "2023-03-02T17:30:00");
+INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime, OrderInfoStatus)
+VALUES ("pickup", 27.45, 7.88, "2023-03-02T17:30:00", true);
 
 -- pickup order
-INSERT INTO pickup(PickupOrderId, PickupCustomerId)
-VALUES (5, 2);
+INSERT INTO pickup(PickupOrderId, PickupCustomerId, PickupIsPickedUp)
+VALUES (5, 2, true);
 
 -- pizzas
 -- id:13
@@ -473,8 +473,8 @@ INSERT INTO customer(CustomerFName, CustomerLName, CustomerPhone, CustomerStreet
 VALUES ("Frank", "Turner", "8642328944", "6745 Wessex St", "Anderson", "SC", 29621);
 
 -- order id:6
-INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime)
-VALUES ("delivery", 25.81, 4.24, "2023-03-02T18:17:00");
+INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime, OrderInfoStatus)
+VALUES ("delivery", 25.81, 4.24, "2023-03-02T18:17:00", true);
 
 -- delivery order
 INSERT INTO delivery(DeliveryOrderId, DeliveryCustomerId)
@@ -510,8 +510,8 @@ INSERT INTO customer(CustomerFName, CustomerLName, CustomerPhone, CustomerStreet
 VALUES ("Milo", "Auckerman", "8648785679", "8879 Suburban Home", "Anderson", "SC", 29621);
 
 -- order id:7
-INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime)
-VALUES ("delivery", 37.25, 6.00, "2023-04-13T20:32:00");
+INSERT INTO orderinfo(OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime, OrderInfoStatus)
+VALUES ("delivery", 37.25, 6.00, "2023-04-13T20:32:00", true);
 
 -- delivery order
 INSERT INTO delivery(DeliveryOrderId, DeliveryCustomerId)
