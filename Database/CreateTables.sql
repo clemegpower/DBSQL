@@ -4,7 +4,7 @@ your database. Remember to include any constraints that you need for the databas
 Run the SQL script in MySQL to create your database. This script should include SQL to
 create the database schema. Name this file “CreateTables.sql”
 */
-
+DROP SCHEMA IF EXISTS cpsc4620project;
 CREATE SCHEMA cpsc4620project;
 
 USE cpsc4620project;
@@ -58,7 +58,7 @@ CREATE TABLE orderinfo (
     OrderInfoPrice DECIMAL(5,2),
     OrderInfoCost DECIMAL(5, 2),
     OrderInfoTime datetime,
-    OrderInfoStatus boolean default = false,
+    OrderInfoStatus boolean default false,
     PRIMARY KEY (OrderInfoId)
 );
 
@@ -78,7 +78,7 @@ CREATE TABLE delivery (
 CREATE TABLE pickup (
     PickupOrderId int PRIMARY KEY,
     PickupCustomerId int,
-    PickupIsPickedUp boolean default=false,
+    PickupIsPickedUp boolean default false,
     FOREIGN KEY (PickupOrderId) REFERENCES orderinfo(OrderInfoId),
     FOREIGN KEY (PickupCustomerId) REFERENCES customer(CustomerId)
 );
