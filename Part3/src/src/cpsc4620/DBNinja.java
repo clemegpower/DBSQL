@@ -1,4 +1,4 @@
-package cpsc4620;
+
 
 import java.io.IOException;
 import java.sql.*;
@@ -8,16 +8,16 @@ import java.util.Date;
 /*
  * This file is where most of your code changes will occur You will write the code to retrieve
  * information from the database, or save information to the database
- * 
+ *
  * The class has several hard coded static variables used for the connection, you will need to
  * change those to your connection information
- * 
+ *
  * This class also has static string variables for pickup, delivery and dine-in. If your database
  * stores the strings differently (i.e "pick-up" vs "pickup") changing these static variables will
  * ensure that the comparison is checking for the right string in other places in the program. You
  * will also need to use these strings if you store this as boolean fields or an integer.
- * 
- * 
+ *
+ *
  */
 
 /**
@@ -62,7 +62,7 @@ public final class DBNinja {
 		 * add code to add the order to the DB. Remember that we're not just
 		 * adding the order to the order DB table, but we're also recording
 		 * the necessary data for the delivery, dinein, and pickup tables
-		 * 
+		 *
 		 */
 
 		if (o instanceof DineinOrder) {
@@ -86,7 +86,7 @@ public final class DBNinja {
 		 * Add the code needed to insert the pizza into into the database.
 		 * Keep in mind adding pizza discounts and toppings associated with the pizza,
 		 * there are other methods below that may help with that process.
-		 * 
+		 *
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
@@ -94,22 +94,22 @@ public final class DBNinja {
 	}
 
 	public static void useTopping(Pizza p, Topping t, boolean isDoubled) throws SQLException, IOException // this method
-																											// will
-																											// update
-																											// toppings
-																											// inventory
-																											// in SQL
-																											// and add
-																											// entities
-																											// to the
-																											// Pizzatops
-																											// table.
-																											// Pass in
-																											// the p
-																											// pizza
-																											// that is
-																											// using t
-																											// topping
+	// will
+	// update
+	// toppings
+	// inventory
+	// in SQL
+	// and add
+	// entities
+	// to the
+	// Pizzatops
+	// table.
+	// Pass in
+	// the p
+	// pizza
+	// that is
+	// using t
+	// topping
 	{
 		connect_to_db();
 		/*
@@ -118,10 +118,10 @@ public final class DBNinja {
 		 * extra toppings as well)
 		 * - connect the topping to the pizza
 		 * What that means will be specific to your yimplementatinon.
-		 * 
+		 *
 		 * Ideally, you should't let toppings go negative....but this should be dealt
 		 * with BEFORE calling this method.
-		 * 
+		 *
 		 */
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
@@ -132,9 +132,10 @@ public final class DBNinja {
 		connect_to_db();
 		/*
 		 * This method connects a discount with a Pizza in the database.
-		 * 
+		 *
 		 * What that means will be specific to your implementatinon.
 		 */
+		String query = "insert into pizzadiscount (PizzaDiscountPizza, PizzaDiscountDiscount) values (?,?)";
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -144,7 +145,7 @@ public final class DBNinja {
 		connect_to_db();
 		/*
 		 * This method connects a discount with an order in the database
-		 * 
+		 *
 		 * You might use this, you might not depending on where / how to want to update
 		 * this information in the dabast
 		 */
@@ -157,8 +158,15 @@ public final class DBNinja {
 		connect_to_db();
 		/*
 		 * This method adds a new customer to the database.
-		 * 
+		 *
 		 */
+
+		String query = "insert into customer (CustomerFName, CustomerLName, CustomerPhone) values (?, ?, ?);";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setString(1, c.getFName());
+		stmt.setString(2, c.getLName());
+		stmt.setString(3, c.getPhone());
+		stmt.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -169,8 +177,13 @@ public final class DBNinja {
 		/*
 		 * Find the specifed order in the database and mark that order as complete in
 		 * the database.
-		 * 
+		 *
 		 */
+		int id_num = o.getOrderID();
+		String query = "update orderinfo set isCompleted = true where OrderInfoId = ?;";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setInt(1, id_num);
+		stmt.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -186,10 +199,29 @@ public final class DBNinja {
 		 * Remember that in Java, we account for supertypes and subtypes
 		 * which means that when we create an arrayList of orders, that really
 		 * means we have an arrayList of dineinOrders, deliveryOrders, and pickupOrders.
-		 * 
+		 *
 		 * Don't forget to order the data coming from the database appropriately.
-		 * 
+		 *
 		 */
+
+		//here's my first attempt of the code
+//		ArrayList<Order> orderList = new ArrayList<Order>();
+//		Statement stmt = conn.createStatement();
+//		if (openOnly) {
+//			String query = "SELECT * FROM orderinfo WHERE isCompleted == 1";
+//			ResultSet rset = stmt.executeQuery(query);
+//
+//			while (rset.next()) {
+//
+//				Order newOrder = new Order(
+//						rset.getInt("OrderInfoId"),
+//
+//			}
+//		}
+//		else {
+//			String query = "Select * from orderinfo";
+//		}
+		//orderList.add(newOrder);
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -203,6 +235,8 @@ public final class DBNinja {
 		 * NOTE...there should ALWAYS be a "last order"!
 		 */
 
+
+
 		return null;
 	}
 
@@ -210,7 +244,7 @@ public final class DBNinja {
 		/*
 		 * Query the database for ALL the orders placed on a specific date
 		 * and return a list of those orders.
-		 * 
+		 *
 		 */
 
 		return null;
@@ -221,12 +255,32 @@ public final class DBNinja {
 		/*
 		 * Query the database for all the available discounts and
 		 * return them in an arrayList of discounts.
-		 * 
+		 *
 		 */
+		ArrayList<Discount> discountList = new ArrayList<Discount>();
+		String query = "SELECT * FROM discount";
+		Statement stmt = conn.createStatement();
+		ResultSet rset = stmt.executeQuery(query);
+
+		while (rset.next()) {
+			Double amount = rset.getDouble("DiscountPercent");
+
+			if (amount == 0.0){
+				amount = rset.getDouble("DiscountDollarAmt");
+			}
+
+			Discount newDiscount = new Discount(
+					rset.getInt("DiscountId"),
+					rset.getString("DiscountName"),
+					amount,
+					(rset.getDouble("DiscountPercent") != 0.0));
+
+			discountList.add(newDiscount);
+		}
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
-		return null;
+		return discountList;
 	}
 
 	public static Discount findDiscountByName(String name) {
@@ -234,7 +288,7 @@ public final class DBNinja {
 		 * Query the database for a discount using it's name.
 		 * If found, then return an OrderDiscount object for the discount.
 		 * If it's not found....then return null
-		 * 
+		 *
 		 */
 
 		return null;
@@ -246,7 +300,7 @@ public final class DBNinja {
 		 * Query the data for all the customers and return an arrayList of all the
 		 * customers.
 		 * Don't forget to order the data coming from the database appropriately.
-		 * 
+		 *
 		 */
 
 		ArrayList<Customer> customerList = new ArrayList<Customer>();
@@ -275,8 +329,10 @@ public final class DBNinja {
 		 * Query the database for a customer using a phone number.
 		 * If found, then return a Customer object for the customer.
 		 * If it's not found....then return null
-		 * 
+		 *
 		 */
+
+
 
 		return null;
 	}
@@ -287,7 +343,7 @@ public final class DBNinja {
 		 * Query the database for the aviable toppings and
 		 * return an arrayList of all the available toppings.
 		 * Don't forget to order the data coming from the database appropriately.
-		 * 
+		 *
 		 */
 		ArrayList<Topping> toppingList = new ArrayList<Topping>();
 
@@ -322,7 +378,7 @@ public final class DBNinja {
 		 * Query the database for the topping using it's name.
 		 * If found, then return a Topping object for the topping.
 		 * If it's not found....then return null
-		 * 
+		 *
 		 */
 
 		return null;
@@ -332,18 +388,25 @@ public final class DBNinja {
 		connect_to_db();
 		/*
 		 * Updates the quantity of the topping in the database by the amount specified.
-		 * 
+		 *
 		 */
+		int id_num = t.getTopID();
+		String query = "update topping set ToppingCurrentInventory = ToppingCurrentInventory + ? where ToppingId = ?;";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setInt(2, id_num);
+		stmt.setDouble(1, quantity);
+		stmt.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
 	}
 
+
 	public static double getBaseCustPrice(String size, String crust) throws SQLException, IOException {
 		connect_to_db();
 		/*
 		 * Query the database fro the base customer price for that size and crust pizza.
-		 * 
+		 *
 		 */
 		double baseCustPrice = 0.0;
 
@@ -368,7 +431,7 @@ public final class DBNinja {
 		connect_to_db();
 		/*
 		 * Query the database fro the base business price for that size and crust pizza.
-		 * 
+		 *
 		 */
 
 		double baseBusPrice = 0.0;
@@ -394,9 +457,9 @@ public final class DBNinja {
 		connect_to_db();
 		/*
 		 * Queries the database and prints the current topping list with quantities.
-		 * 
+		 *
 		 * The result should be readable and sorted as indicated in the prompt.
-		 * 
+		 *
 		 */
 
 		String query = "SELECT ToppingId, ToppingName, ToppingCurrentInventory FROM topping ORDER BY ToppingName;";
@@ -421,10 +484,21 @@ public final class DBNinja {
 		 * Prints the ToppingPopularity view. Remember that this view
 		 * needs to exist in your DB, so be sure you've run your createViews.sql
 		 * files on your testing DB if you haven't already.
-		 * 
+		 *
 		 * The result should be readable and sorted as indicated in the prompt.
-		 * 
+		 *
 		 */
+
+		String query = "SELECT * FROM ToppingPopularity";
+		Statement stmt = conn.createStatement();
+		ResultSet rset = stmt.executeQuery(query);
+		String formatString = "%-18s%-5s";
+		System.out.println((String.format(formatString, "Topping", "Topping Count")));
+		while (rset.next()) {
+			String name = rset.getString("ToppingName");
+			Double count = rset.getDouble("ToppingCount");
+			System.out.println((String.format(formatString, name, count)));
+		}
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -436,10 +510,23 @@ public final class DBNinja {
 		 * Prints the ProfitByPizza view. Remember that this view
 		 * needs to exist in your DB, so be sure you've run your createViews.sql
 		 * files on your testing DB if you haven't already.
-		 * 
+		 *
 		 * The result should be readable and sorted as indicated in the prompt.
-		 * 
+		 *
 		 */
+		String query = "SELECT * FROM ProfitByPizza";
+		Statement stmt = conn.createStatement();
+		ResultSet rset = stmt.executeQuery(query);
+		String formatString = "%-18s%-18s%-10s%-20s";
+		System.out.println((String.format(formatString, "Pizza Size", "Pizza Crust", "Profit", "LastOrderDate")));
+		while (rset.next()) {
+			String crust = rset.getString("Crust");
+			String type = rset.getString("Type");
+			Double profit = rset.getDouble("Profit");
+			String date = rset.getString("OrderMonth");
+			System.out.println((String.format(formatString, crust, type, profit, date)));
+
+		}
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -451,11 +538,28 @@ public final class DBNinja {
 		 * Prints the ProfitByOrderType view. Remember that this view
 		 * needs to exist in your DB, so be sure you've run your createViews.sql
 		 * files on your testing DB if you haven't already.
-		 * 
+		 *
 		 * The result should be readable and sorted as indicated in the prompt.
-		 * 
+		 *
 		 */
-
+		String query = "SELECT * FROM ProfitByOrderType";
+		Statement stmt = conn.createStatement();
+		ResultSet rset = stmt.executeQuery(query);
+		String formatString = "%-18s%-18s%-18s%-18s%-10s";
+		System.out.println(String.format(formatString, "Order Type", "Order Month", "TotalOrderPrice", "TotalOrderCost", "Profit"));
+		while (rset.next()) {
+			String type = rset.getString("customerType");
+			String date = rset.getString("OrderMonth");
+			Double price = rset.getDouble("TotalOrderPrice");
+			Double cost = rset.getDouble("TotalOrderCost");
+			Double profit = rset.getDouble("TotalProfit");
+			if (type == null) {
+				System.out.println(String.format(formatString, " ", date, price, cost, profit));
+			}
+			else {
+				System.out.println(String.format(formatString, type, date, price, cost, profit));
+			}
+		}
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
 	}
@@ -466,7 +570,7 @@ public final class DBNinja {
 		 * based on a customer ID. This is an example of how to interact with
 		 * your database from Java. It's used in the model solution for this
 		 * project...so the code works!
-		 * 
+		 *
 		 * OF COURSE....this code would only work in your application if the table &
 		 * field names match!
 		 *
@@ -478,7 +582,7 @@ public final class DBNinja {
 		 * an example query using a constructed string...
 		 * remember, this style of query construction could be subject to sql injection
 		 * attacks!
-		 * 
+		 *
 		 */
 		String cname1 = "";
 		String query = "Select FName, LName From customer WHERE CustID=" + CustID + ";";
@@ -491,7 +595,7 @@ public final class DBNinja {
 
 		/*
 		 * an example of the same query using a prepared statement...
-		 * 
+		 *
 		 */
 		String cname2 = "";
 		PreparedStatement os;
@@ -503,7 +607,7 @@ public final class DBNinja {
 		rset2 = os.executeQuery();
 		while (rset2.next()) {
 			cname2 = rset2.getString("FName") + " " + rset2.getString("LName"); // note the use of field names in the
-																				// getSting methods
+			// getSting methods
 		}
 
 		conn.close();
