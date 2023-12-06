@@ -1,5 +1,3 @@
-package cpsc4620;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,17 +8,17 @@ import java.util.List;
 
 /*
  * This file is where the front end magic happens.
- * 
+ *
  * You will have to write the methods for each of the menu options.
- * 
+ *
  * This file should not need to access your DB at all, it should make calls to the DBNinja that will do all the connections.
- * 
+ *
  * You can add and remove methods as you see necessary. But you MUST have all of the menu methods (including exit!)
- * 
+ *
  * Simply removing menu methods because you don't know how to implement it will result in a major error penalty (akin to your program crashing)
- * 
+ *
  * Speaking of crashing. Your program shouldn't do it. Use exceptions, or if statements, or whatever it is you need to do to keep your program from breaking.
- * 
+ *
  */
 
 public class Menu {
@@ -52,7 +50,7 @@ public class Menu {
 					EnterCustomer();
 					break;
 				case 4:// view order
-						// open/closed/date
+					// open/closed/date
 					ViewOrders();
 					break;
 				case 5:// mark order as complete
@@ -80,20 +78,20 @@ public class Menu {
 
 		/*
 		 * EnterOrder should do the following:
-		 * 
+		 *
 		 * Ask if the order is delivery, pickup, or dinein
 		 * if dine in....ask for table number
 		 * if pickup...
 		 * if delivery...
-		 * 
+		 *
 		 * Then, build the pizza(s) for the order (there's a method for this)
 		 * until there are no more pizzas for the order
 		 * add the pizzas to the order
 		 *
 		 * Apply order discounts as needed (including to the DB)
-		 * 
+		 *
 		 * return to menu
-		 * 
+		 *
 		 * make sure you use the prompts below in the correct order!
 		 */
 
@@ -193,10 +191,10 @@ public class Menu {
 		/*
 		 * Ask for the name of the customer:
 		 * First Name <space> Last Name
-		 * 
+		 *
 		 * Ask for the phone number.
 		 * (##########) (No dash/space)
-		 * 
+		 *
 		 * Once you get the name and phone number, add it to the DB
 		 */
 
@@ -209,7 +207,7 @@ public class Menu {
 		System.out.println("What is this customer's phone number (##########) (No dash/space)");
 		String phone_num = reader.readLine();
 
-		Customer cust = new Customer(1, first_name, last_name, phone_num);
+		Customer cust = new Customer(6, first_name, last_name, phone_num);
 		DBNinja.addCustomer(cust);
 	}
 
@@ -222,19 +220,34 @@ public class Menu {
 		 * a. all open orders
 		 * b. all completed orders
 		 * c. all the orders (open and completed) since a specific date (inclusive)
-		 * 
+		 *
 		 * After displaying the list of orders (in a condensed format) must allow the
 		 * user to select a specific order for viewing its details.
 		 * The details include the full order type information, the pizza information
 		 * (including pizza discounts), and the order discounts.
-		 * 
+		 *
 		 */
 
 		// User Input Prompts...
 		System.out.println(
 				"Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
-		System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
-		System.out.println("I don't understand that input, returning to menu");
+		String input = reader.readLine();
+		if (input.equals("a")) {
+			//display all orders
+		}
+		else if (input.equals("b")) {
+			//display all open orders
+		}
+		else if (input.equals("c")) {
+			//display all closed orders
+		}
+		else if (input.equals("d")) {
+			//display by certain date
+			System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
+		}
+		else {
+			System.out.println("I don't understand that input, returning to menu");
+		}
 		System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 		System.out.println("Incorrect entry, returning to menu.");
 		System.out.println("No orders to display, returning to menu.");
@@ -246,16 +259,26 @@ public class Menu {
 		/*
 		 * All orders that are created through java (part 3, not the orders from part 2)
 		 * should start as incomplete
-		 * 
+		 *
 		 * When this method is called, you should print all of the "opoen" orders marked
 		 * and allow the user to choose which of the incomplete orders they wish to mark
 		 * as complete
-		 * 
+		 *
 		 */
 
 		// User Input Prompts...
 		System.out.println("There are no open orders currently... returning to menu...");
+		//print the orders
 		System.out.println("Which order would you like mark as complete? Enter the OrderID: ");
+		Integer order_Id = Integer.parseInt(reader.readLine());
+		ArrayList<Order> orderList = DBNinja.getOrders(false);
+		Order o = null;
+		for (int i = 0; i < orderList.size(); i++) {
+			if (orderList.get(i).getOrderID() == order_Id) {
+				o = orderList.get(i);
+			}
+		}
+		DBNinja.completeOrder(o);
 		System.out.println("Incorrect entry, not an option");
 
 	}
@@ -276,9 +299,20 @@ public class Menu {
 		 */
 
 		// User Input Prompts...
+		ViewInventoryLevels();
 		System.out.println("Which topping do you want to add inventory to? Enter the number: ");
+		int id_num = Integer.parseInt(reader.readLine());
+		ArrayList<Topping> toppingList = DBNinja.getToppingList();
+		Topping t = null;
+		for (int i = 0; i < toppingList.size(); i++) {
+			if (toppingList.get(i).getTopID() == id_num) {
+				t = toppingList.get(i);
+			}
+		}
 		System.out.println("How many units would you like to add? ");
-		System.out.println("Incorrect entry, not an option");
+		int quantity = Integer.parseInt(reader.readLine());
+		DBNinja.addToInventory(t, quantity);
+		//System.out.println("Incorrect entry, not an option");
 
 	}
 
@@ -287,16 +321,16 @@ public class Menu {
 
 		/*
 		 * This is a helper method for first menu option.
-		 * 
+		 *
 		 * It should ask which size pizza the user wants and the crustType.
-		 * 
+		 *
 		 * Once the pizza is created, it should be added to the DB.
-		 * 
+		 *
 		 * We also need to add toppings to the pizza. (Which means we not only need to
 		 * add toppings here, but also our bridge table)
-		 * 
+		 *
 		 * We then need to add pizza discounts (again, to here and to the database)
-		 * 
+		 *
 		 * Once the discounts are added, we can return the pizza
 		 */
 		Pizza ret = null;
@@ -409,13 +443,12 @@ public class Menu {
 			}
 		}
 
-		ArrayList<Discount> fullDiscountList = DBNinja.getDiscountList();
 
 		System.out.println("Do you want to add discounts to this Pizza? Enter y/n?");
 		String addDiscounts = reader.readLine();
 
-		while (addDiscounts == "y") {
-
+		while (addDiscounts.equals("y")) {
+			viewDiscounts();
 			System.out.println(
 					"Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 			int discountID = Integer.parseInt(reader.readLine());
@@ -428,17 +461,43 @@ public class Menu {
 		return ret;
 	}
 
+	public static void viewDiscounts() throws SQLException, IOException {
+		/*
+		 * Simply print out all of the customers from the database.
+		 */
+		ArrayList<Discount> discountList = DBNinja.getDiscountList();
+		for (int i = 0; i < discountList.size(); i++) {
+			Discount d = discountList.get(i);
+			System.out.println("DiscountId=" + d.getDiscountID()
+					+ " | " + d.getDiscountName() + ", Amount=" + d.getAmount()
+					+ ", isPercent= " + d.isPercent());
+		}
+	}
+
 	public static void PrintReports() throws SQLException, NumberFormatException, IOException {
 		/*
 		 * This method asks the use which report they want to see and calls the DBNinja
 		 * method to print the appropriate report.
-		 * 
+		 *
 		 */
 
 		// User Input Prompts...
 		System.out.println(
 				"Which report do you wish to print? Enter\n(a) ToppingPopularity\n(b) ProfitByPizza\n(c) ProfitByOrderType:");
-		System.out.println("I don't understand that input... returning to menu...");
+		String whichReport = reader.readLine();
+
+		if (whichReport.equals("a")) {
+			DBNinja.printToppingPopReport();
+		}
+		else if (whichReport.equals("b")) {
+			DBNinja.printProfitByPizzaReport();
+		}
+		else if (whichReport.equals("c")) {
+			DBNinja.printProfitByOrderType();
+		}
+		else {
+			System.out.println("I don't understand that input... returning to menu...");
+		}
 
 	}
 
