@@ -258,6 +258,7 @@ public final class DBNinja {
 		ArrayList<Order> orderList = new ArrayList<Order>();
 
 		String query = "SELECT * FROM orderinfo left join dinein on OrderInfoId=DineInOrderId left join pickup on OrderInfoId=PickupOrderId left join delivery on OrderInfoId=DeliveryOrderId left join customer on DeliveryCustomerId=CustomerId;";
+
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 

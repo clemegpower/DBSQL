@@ -236,6 +236,11 @@ public class Menu {
 		String input = reader.readLine();
 		if (input.equals("a")) {
 			// display all orders
+			ArrayList<Order> orderList = DBNinja.getOrders(false);
+			for (int i = 0; i < orderList.size(); i++) {
+				Order o = orderList.get(i);
+				System.out.println("ID=" + o.getOrderID() + " Type=" + o.getOrderType());
+			}
 		} else if (input.equals("b")) {
 			// display all open orders
 		} else if (input.equals("c")) {
