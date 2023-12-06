@@ -58,6 +58,7 @@ CREATE TABLE orderinfo (
     OrderInfoPrice DECIMAL(5,2),
     OrderInfoCost DECIMAL(5, 2),
     OrderInfoTime datetime,
+    OrderInfoStatus boolean default = false,
     PRIMARY KEY (OrderInfoId)
 );
 
@@ -77,6 +78,7 @@ CREATE TABLE delivery (
 CREATE TABLE pickup (
     PickupOrderId int PRIMARY KEY,
     PickupCustomerId int,
+    PickupIsPickedUp boolean default=false,
     FOREIGN KEY (PickupOrderId) REFERENCES orderinfo(OrderInfoId),
     FOREIGN KEY (PickupCustomerId) REFERENCES customer(CustomerId)
 );

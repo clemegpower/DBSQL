@@ -441,6 +441,7 @@ public class Menu {
 			}
 		}
 
+		// TODO: Add Discounts to Pizza
 		System.out.println("Do you want to add discounts to this Pizza? Enter y/n?");
 		String addDiscounts = reader.readLine();
 

@@ -205,27 +205,43 @@ public final class DBNinja {
 		 */
 
 		// here's my first attempt of the code
-		// ArrayList<Order> orderList = new ArrayList<Order>();
-		// Statement stmt = conn.createStatement();
-		// if (openOnly) {
-		// String query = "SELECT * FROM orderinfo WHERE isCompleted == 1";
-		// ResultSet rset = stmt.executeQuery(query);
-		//
-		// while (rset.next()) {
-		//
-		// Order newOrder = new Order(
-		// rset.getInt("OrderInfoId"),
-		//
-		// }
-		// }
-		// else {
-		// String query = "Select * from orderinfo";
-		// }
-		// orderList.add(newOrder);
+		ArrayList<Order> orderList = new ArrayList<Order>();
+
+		String query = "SELECT * FROM orderinfo left join dinein on OrderInfoId=DineInOrderId left join pickup on OrderInfoId=PickupOrderId left join delivery on OrderInfoId=DeliveryOrderId left join customer on DeliveryCustomerId=CustomerId;";
+		Statement stmt = conn.createStatement();
+		ResultSet rset = stmt.executeQuery(query);
+
+		while (rset.next()) {
+			Order newOrder = null;
+			int orderId = rset.getInt("OrderInfoId");
+			String orderType = rset.getString("OrderInfoType");
+			double price = rset.getDouble("OrderInfoPrice");
+			double cost = rset.getDouble("OrderInfoCost");
+			String orderTime = rset.getString("OrderInfoTime");
+			int isComplete = rset.getBoolean("OrderInfoStatus") ? 1 : 0;
+
+			if (orderType.equals(pickup)) {
+				int custId = rset.getInt("PickupCustomerId");
+				int isPickedUp = rset.getBoolean("PickupIsPickedUp") ? 1 : 0;
+				newOrder = new PickupOrder(orderId, custId, orderTime, price, cost, isPickedUp, isComplete);
+			} else if (orderType.equals(delivery)) {
+				int custId = rset.getInt("DeliveryCustomerId");
+
+				/* TODO: get address for the delivery */
+				String address = "";
+
+				newOrder = new DeliveryOrder(orderId, custId, orderTime, price, cost, isComplete, address);
+			} else if (orderType.equals(dine_in)) {
+				int tableNum = rset.getInt("DineinTableNum");
+				newOrder = new DineinOrder(orderId, -1, orderTime, price, cost, isComplete, tableNum);
+			}
+
+			orderList.add(newOrder);
+		}
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
-		return null;
+		return orderList;
 	}
 
 	public static Order getLastOrder() {
