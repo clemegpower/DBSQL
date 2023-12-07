@@ -1,4 +1,4 @@
-
+package cpsc4620;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class Menu {
 					EnterCustomer();
 					break;
 				case 4:// view order
-					// open/closed/date
+						// open/closed/date
 					ViewOrders();
 					break;
 				case 5:// mark order as complete
@@ -98,9 +98,8 @@ public class Menu {
 		 * make sure you use the prompts below in the correct order!
 		 */
 
-
 		int order_ID = DBNinja.get_next_Orderid(); // need to get this value via sql or autoincrement?
-		//System.out.println(order_ID);
+		// System.out.println(order_ID);
 		int cust_ID = -1;
 		int id_num = -1;
 		int table_num = -1;
@@ -115,7 +114,7 @@ public class Menu {
 		} else if (order_type == 2 || order_type == 3) {
 			System.out.println("Is this order for an existing customer? Answer y/n: ");
 			String existing_cust = reader.readLine();
-			if (existing_cust.equals ("y")) {
+			if (existing_cust.equals("y")) {
 				System.out.println("Here's a list of the current customers: ");
 				viewCustomers();
 				System.out.println("Which customer is this order for? Enter ID Number:");
@@ -147,24 +146,27 @@ public class Menu {
 			more_pizza = Integer.parseInt(reader.readLine());
 		}
 
-
 		ArrayList<Discount> allDiscounts = DBNinja.getDiscountList();
 		System.out.println("Do you want to add discounts to this order? Enter y/n?");
 		String enter_discounts = reader.readLine();
 		if (enter_discounts.equals("y")) {
 			while (more_discounts != -1) {
-				System.out.println("Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
+				System.out.println(
+						"Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 				viewDiscounts();
 				more_discounts = Integer.parseInt(reader.readLine());
-				Discount newDiscount = allDiscounts.get(more_discounts - 1); //I'm not sure if this is right?
+				Discount newDiscount = allDiscounts.get(more_discounts - 1); // I'm not sure if this is right?
 				discountList.add(newDiscount);
 			}
 		}
 		String date = new Date().toString();
 		String order_name = " ";
-		if (order_type == 1)  order_name = "Dine-in";
-		else if (order_type == 2) order_name = "Pick-up";
-		else if (order_type == 3) order_name = "Delivery";
+		if (order_type == 1)
+			order_name = "Dine-in";
+		else if (order_type == 2)
+			order_name = "Pick-up";
+		else if (order_type == 3)
+			order_name = "Delivery";
 		Order newOrder = new Order(1, id_num, order_name, date, totalCustPrice, totalBusPrice, 1);
 		newOrder.setDiscountList(discountList);
 		newOrder.setPizzaList(pizzaList);
@@ -363,7 +365,7 @@ public class Menu {
 		 */
 		Pizza ret = null;
 		int pizza_Id = -1;
-		//System.out.println(orderID);
+		// System.out.println(orderID);
 
 		// User Input Prompts...
 		// Choose pizza size
@@ -446,7 +448,7 @@ public class Menu {
 					extra = true;
 					ret.modifyDoubledArray(indexOfChoice, true);
 				}
-				//boolean extra = (extraInput == "y") ? true : false;
+				// boolean extra = (extraInput == "y") ? true : false;
 
 				// calculate the amount of toppings to use
 				double amountToUse = 0;

@@ -1,3 +1,4 @@
+package cpsc4620;
 
 import java.io.IOException;
 import java.sql.*;
@@ -79,7 +80,7 @@ public final class DBNinja {
 		conn.close();
 	}
 
-	public static int get_next_Orderid() throws SQLException, IOException{
+	public static int get_next_Orderid() throws SQLException, IOException {
 		connect_to_db();
 		String query4 = "select max(OrderInfoId) from orderinfo";
 		PreparedStatement stmt = conn.prepareStatement(query4);
@@ -110,11 +111,11 @@ public final class DBNinja {
 		stmt.setString(3, p.getPizzaState());
 		stmt.setDouble(4, p.getBusPrice());
 		stmt.setDouble(5, p.getCustPrice());
-		//NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE
+		// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE
 
 		stmt.executeUpdate();
 
-		//update ID of pizza
+		// update ID of pizza
 		String query4 = "select max(PizzaId) from pizza";
 		ResultSet rset = stmt.executeQuery(query4);
 		while (rset.next()) {
@@ -138,7 +139,6 @@ public final class DBNinja {
 			disconn.setInt(2, discountList.get(i).getDiscountID());
 			disconn.executeUpdate();
 		}
-
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
