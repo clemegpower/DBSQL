@@ -1,4 +1,3 @@
-package cpsc4620;
 
 import java.io.IOException;
 import java.sql.*;
@@ -64,13 +63,51 @@ public final class DBNinja {
 		 * the necessary data for the delivery, dinein, and pickup tables
 		 *
 		 */
+		//System.out.println("date" + java.sql.Date.valueOf((o.getDate())));
+
+		String query1 = "insert into orderinfo (OrderInfoId, OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoStatus) " +
+				"values (?,?,?,?,?)";
+		PreparedStatement order_conn = conn.prepareStatement(query1);
+		order_conn.setInt(1, o.getOrderID());
+		order_conn.setString(2, o.getOrderType());
+		order_conn.setDouble(3, o.getCustPrice());
+		order_conn.setDouble(4, o.getBusPrice());
+		//order_conn.setDate(5, String date = new java.util.Date().toString(););
+		order_conn.setInt(5, o.getIsComplete());
+		// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE???
+
+		order_conn.executeUpdate();
 
 		if (o instanceof DineinOrder) {
+			System.out.println("Inserting into dine in...");
+			String query = "insert into dinein (DineInOrderId, DineInTableNum) " +
+					"values (?,?)";
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setInt(1, o.getOrderID());
+			stmt.setInt(2, ((DineinOrder) o).getTableNum());
+			// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE???
 
+			stmt.executeUpdate();
 		} else if (o instanceof DeliveryOrder) {
+			System.out.println("Inserting into delivery...");
+			String query = "insert into delivery (DeliveryOrderId, DeliveryCustomerId) " +
+					"values (?,?)";
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setInt(1, o.getOrderID());
+			stmt.setInt(2, o.getCustID());
+			// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE???
+			stmt.executeUpdate();
 
 		} else if (o instanceof PickupOrder) {
-
+			System.out.println("Inserting into pickup...");
+			String query = "insert into pickup (PickupOrderId, PickupCustomerId, PickupIsPickedUp) " +
+					"values (?,?,?)";
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setInt(1, o.getOrderID());
+			stmt.setInt(2, o.getCustID());
+			stmt.setInt(3, ((PickupOrder) o).getIsPickedUp());
+			// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE???
+			stmt.executeUpdate();
 		} else {
 			System.err.println("Error in 'addOrder': variable 'o' has invalid order type");
 			return;
@@ -90,7 +127,7 @@ public final class DBNinja {
 			id = rset.getInt("max(OrderInfoId)");
 		}
 		conn.close();
-		return id;
+		return id + 1;
 	}
 
 	public static void addPizza(Pizza p) throws SQLException, IOException {
@@ -111,6 +148,7 @@ public final class DBNinja {
 		stmt.setString(3, p.getPizzaState());
 		stmt.setDouble(4, p.getBusPrice());
 		stmt.setDouble(5, p.getCustPrice());
+		//stmt.setInt(6, p.getOrderID()); - this doesn't work because of some sort of foreign key constraint
 		// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE
 
 		stmt.executeUpdate();
@@ -285,27 +323,14 @@ public final class DBNinja {
 		conn.close();
 	}
 
-	public static ArrayList<Order> getOrders(boolean openOnly) throws SQLException, IOException {
+	public static ArrayList<Order> getClosedOrders() throws SQLException, IOException {
 		connect_to_db();
-		/*
-		 * Return an arraylist of all of the orders.
-		 * openOnly == true => only return a list of open (ie orders that have not been
-		 * marked as completed)
-		 * == false => return a list of all the orders in the database
-		 * Remember that in Java, we account for supertypes and subtypes
-		 * which means that when we create an arrayList of orders, that really
-		 * means we have an arrayList of dineinOrders, deliveryOrders, and pickupOrders.
-		 *
-		 * Don't forget to order the data coming from the database appropriately.
-		 *
-		 */
-
-		// here's my first attempt of the code
 		ArrayList<Order> orderList = new ArrayList<Order>();
-
-		String query = "SELECT * FROM orderinfo left join dinein on OrderInfoId=DineInOrderId left join pickup on OrderInfoId=PickupOrderId left join delivery on OrderInfoId=DeliveryOrderId left join customer on DeliveryCustomerId=CustomerId;";
-		Statement stmt = conn.createStatement();
-		ResultSet rset = stmt.executeQuery(query);
+		String query2 = "SELECT * FROM orderinfo left join dinein on OrderInfoId=DineInOrderId left join pickup on " +
+				"OrderInfoId=PickupOrderId left join delivery on OrderInfoId=DeliveryOrderId left join customer on " +
+				"DeliveryCustomerId=CustomerId where OrderInfoStatus=1";
+		Statement second_stmt = conn.createStatement();
+		ResultSet rset = second_stmt.executeQuery(query2);
 
 		while (rset.next()) {
 			Order newOrder = null;
@@ -333,6 +358,95 @@ public final class DBNinja {
 			}
 
 			orderList.add(newOrder);
+		}
+		conn.close();
+		return orderList;
+	}
+
+	public static ArrayList<Order> getOrders(boolean openOnly) throws SQLException, IOException {
+		connect_to_db();
+		/*
+		 * Return an arraylist of all of the orders.
+		 * openOnly == true => only return a list of open (ie orders that have not been
+		 * marked as completed)
+		 * == false => return a list of all the orders in the database
+		 * Remember that in Java, we account for supertypes and subtypes
+		 * which means that when we create an arrayList of orders, that really
+		 * means we have an arrayList of dineinOrders, deliveryOrders, and pickupOrders.
+		 *
+		 * Don't forget to order the data coming from the database appropriately.
+		 *
+		 */
+
+		// here's my first attempt of the code
+		ArrayList<Order> orderList = new ArrayList<Order>();
+		if (openOnly == false) {
+			String query = "SELECT * FROM orderinfo left join dinein on OrderInfoId=DineInOrderId left join pickup on OrderInfoId=PickupOrderId left join delivery on OrderInfoId=DeliveryOrderId left join customer on DeliveryCustomerId=CustomerId;";
+			Statement stmt = conn.createStatement();
+			ResultSet rset = stmt.executeQuery(query);
+
+			while (rset.next()) {
+				Order newOrder = null;
+				int orderId = rset.getInt("OrderInfoId");
+				String orderType = rset.getString("OrderInfoType");
+				double price = rset.getDouble("OrderInfoPrice");
+				double cost = rset.getDouble("OrderInfoCost");
+				String orderTime = rset.getString("OrderInfoTime");
+				int isComplete = rset.getBoolean("OrderInfoStatus") ? 1 : 0;
+
+				if (orderType.equals(pickup)) {
+					int custId = rset.getInt("PickupCustomerId");
+					int isPickedUp = rset.getBoolean("PickupIsPickedUp") ? 1 : 0;
+					newOrder = new PickupOrder(orderId, custId, orderTime, price, cost, isPickedUp, isComplete);
+				} else if (orderType.equals(delivery)) {
+					int custId = rset.getInt("DeliveryCustomerId");
+
+					/* TODO: get address for the delivery */
+					String address = "";
+
+					newOrder = new DeliveryOrder(orderId, custId, orderTime, price, cost, isComplete, address);
+				} else if (orderType.equals(dine_in)) {
+					int tableNum = rset.getInt("DineinTableNum");
+					newOrder = new DineinOrder(orderId, -1, orderTime, price, cost, isComplete, tableNum);
+				}
+
+				orderList.add(newOrder);
+			}
+		}
+		else {
+			String query2 = "SELECT * FROM orderinfo left join dinein on OrderInfoId=DineInOrderId left join pickup on " +
+					"OrderInfoId=PickupOrderId left join delivery on OrderInfoId=DeliveryOrderId left join customer on " +
+					"DeliveryCustomerId=CustomerId where OrderInfoStatus=0";
+			Statement second_stmt = conn.createStatement();
+			ResultSet rset = second_stmt.executeQuery(query2);
+
+			while (rset.next()) {
+				Order newOrder = null;
+				int orderId = rset.getInt("OrderInfoId");
+				String orderType = rset.getString("OrderInfoType");
+				double price = rset.getDouble("OrderInfoPrice");
+				double cost = rset.getDouble("OrderInfoCost");
+				String orderTime = rset.getString("OrderInfoTime");
+				int isComplete = rset.getBoolean("OrderInfoStatus") ? 1 : 0;
+
+				if (orderType.equals(pickup)) {
+					int custId = rset.getInt("PickupCustomerId");
+					int isPickedUp = rset.getBoolean("PickupIsPickedUp") ? 1 : 0;
+					newOrder = new PickupOrder(orderId, custId, orderTime, price, cost, isPickedUp, isComplete);
+				} else if (orderType.equals(delivery)) {
+					int custId = rset.getInt("DeliveryCustomerId");
+
+					/* TODO: get address for the delivery */
+					String address = "";
+
+					newOrder = new DeliveryOrder(orderId, custId, orderTime, price, cost, isComplete, address);
+				} else if (orderType.equals(dine_in)) {
+					int tableNum = rset.getInt("DineinTableNum");
+					newOrder = new DineinOrder(orderId, -1, orderTime, price, cost, isComplete, tableNum);
+				}
+
+				orderList.add(newOrder);
+			}
 		}
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
@@ -683,6 +797,7 @@ public final class DBNinja {
 		 *
 		 */
 
+
 		connect_to_db();
 
 		/*
@@ -691,14 +806,14 @@ public final class DBNinja {
 		 * attacks!
 		 *
 		 */
-		String cname1 = "";
-		String query = "Select FName, LName From customer WHERE CustID=" + CustID + ";";
-		Statement stmt = conn.createStatement();
-		ResultSet rset = stmt.executeQuery(query);
-
-		while (rset.next()) {
-			cname1 = rset.getString(1) + " " + rset.getString(2);
-		}
+//		String cname1 = "";
+//		String query = "Select FName, LName From customer WHERE CustID=" + CustID + ";";
+//		Statement stmt = conn.createStatement();
+//		ResultSet rset = stmt.executeQuery(query);
+//
+//		while (rset.next()) {
+//			cname1 = rset.getString(1) + " " + rset.getString(2);
+//		}
 
 		/*
 		 * an example of the same query using a prepared statement...
@@ -708,17 +823,17 @@ public final class DBNinja {
 		PreparedStatement os;
 		ResultSet rset2;
 		String query2;
-		query2 = "Select FName, LName From customer WHERE CustID=?;";
+		query2 = "Select CustomerFName, CustomerLName From customer WHERE CustomerId=?;";
 		os = conn.prepareStatement(query2);
 		os.setInt(1, CustID);
 		rset2 = os.executeQuery();
 		while (rset2.next()) {
-			cname2 = rset2.getString("FName") + " " + rset2.getString("LName"); // note the use of field names in the
+			cname2 = rset2.getString("CustomerFName") + " " + rset2.getString("CustomerLName"); // note the use of field names in the
 			// getSting methods
 		}
 
 		conn.close();
-		return cname1; // OR cname2
+		return cname2; // OR cname2
 	}
 
 	/*
