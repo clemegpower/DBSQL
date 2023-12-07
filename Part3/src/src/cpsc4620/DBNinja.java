@@ -1,4 +1,3 @@
-package cpsc4620;
 
 import java.io.IOException;
 import java.sql.*;
@@ -80,6 +79,19 @@ public final class DBNinja {
 		conn.close();
 	}
 
+	public static int get_next_Orderid() throws SQLException, IOException{
+		connect_to_db();
+		String query4 = "select max(OrderInfoId) from orderinfo";
+		PreparedStatement stmt = conn.prepareStatement(query4);
+		ResultSet rset = stmt.executeQuery(query4);
+		int id = 0;
+		while (rset.next()) {
+			id = rset.getInt("max(OrderInfoId)");
+		}
+		conn.close();
+		return id;
+	}
+
 	public static void addPizza(Pizza p) throws SQLException, IOException {
 		connect_to_db();
 		/*
@@ -89,22 +101,31 @@ public final class DBNinja {
 		 *
 		 */
 
+		// insert into pizza
+		String query3 = "insert into pizza (PizzaCrustType, PizzaSize, PizzaState, PizzaBaseCost, PizzaBasePrice) " +
+				"values (?,?,?,?,?)";
+		PreparedStatement stmt = conn.prepareStatement(query3);
+		stmt.setString(1, p.getCrustType());
+		stmt.setString(2, p.getSize());
+		stmt.setString(3, p.getPizzaState());
+		stmt.setDouble(4, p.getBusPrice());
+		stmt.setDouble(5, p.getCustPrice());
+		//NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE
+
+		stmt.executeUpdate();
+
+		//update ID of pizza
+		String query4 = "select max(PizzaId) from pizza";
+		ResultSet rset = stmt.executeQuery(query4);
+		while (rset.next()) {
+			p.setPizzaID(rset.getInt("max(PizzaId)"));
+		}
+
 		ArrayList<Topping> toppingList = p.getToppings();
 		ArrayList<Discount> discountList = p.getDiscounts();
 		boolean[] isExtra = p.getIsDoubleArray();
 		for (int i = 0; i < toppingList.size(); i++) {
-			String query1 = "insert into pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity) "
-					+
-					"values (?,?,?)";
-			PreparedStatement topconn = conn.prepareStatement(query1);
-			if (isExtra[i] == true) {
-				topconn.setInt(3, 2);
-			} else {
-				topconn.setInt(3, 1);
-			}
-			topconn.setInt(1, p.getPizzaID());
-			topconn.setInt(2, toppingList.get(i).getTopID());
-			topconn.executeUpdate();
+			useTopping(p, toppingList.get(i), isExtra[toppingList.get(i).getTopID() - 1]);
 		}
 
 		// insert into pizzadiscount
@@ -118,16 +139,6 @@ public final class DBNinja {
 			disconn.executeUpdate();
 		}
 
-		// insert into pizza
-		String query3 = "insert into pizza (PizzaSize, PizzaState, PizzaBaseCost, PizzaOrderId, PizzaBasePrice) " +
-				"values (?,?,?,?,?)";
-		PreparedStatement stmt = conn.prepareStatement(query3);
-		stmt.setString(1, p.getSize());
-		stmt.setString(2, p.getPizzaState());
-		stmt.setDouble(3, p.getBusPrice());
-		stmt.setInt(4, p.getOrderID());
-		stmt.setDouble(5, p.getCustPrice());
-		stmt.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -163,6 +174,41 @@ public final class DBNinja {
 		 * with BEFORE calling this method.
 		 *
 		 */
+		String query1 = "insert into pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity) "
+				+ "values (?,?,?)";
+		PreparedStatement topconn = conn.prepareStatement(query1);
+		if (isDoubled) {
+			topconn.setInt(3, 2);
+		} else {
+			topconn.setInt(3, 1);
+		}
+		topconn.setInt(1, p.getPizzaID());
+		topconn.setInt(2, t.getTopID());
+		topconn.executeUpdate();
+
+		String query2 = "update topping set ToppingCurrentInventory = ToppingCurrentInventory - ? where ToppingId = ?";
+		PreparedStatement updatetop = conn.prepareStatement(query2);
+		double amountToUse = 0;
+		switch (p.getSize()) {
+			case DBNinja.size_s:
+				amountToUse = t.getPerAMT();
+				break;
+			case DBNinja.size_m:
+				amountToUse = t.getMedAMT();
+				break;
+			case DBNinja.size_l:
+				amountToUse = t.getLgAMT();
+				break;
+			case DBNinja.size_xl:
+				amountToUse = t.getXLAMT();
+				break;
+		}
+		if (isDoubled) {
+			amountToUse *= 2;
+		}
+		updatetop.setDouble(1, amountToUse);
+		updatetop.setInt(2, t.getTopID());
+		updatetop.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -258,7 +304,6 @@ public final class DBNinja {
 		ArrayList<Order> orderList = new ArrayList<Order>();
 
 		String query = "SELECT * FROM orderinfo left join dinein on OrderInfoId=DineInOrderId left join pickup on OrderInfoId=PickupOrderId left join delivery on OrderInfoId=DeliveryOrderId left join customer on DeliveryCustomerId=CustomerId;";
-
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 
