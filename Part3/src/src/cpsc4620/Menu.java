@@ -1,4 +1,4 @@
-package cpsc4620;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,6 +8,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+/*
+CURRENT ISSUES:
+- I'm not sure how to store the date such that it creates the right format in code and submits it to sql Date format
+- Making sure the order_id shows up in the pizza table - issues with foreign key stuff
+- I'm not sure if the math of everything is right...I assume so. Things are updating/adding/subtracting from topping inventory and prices
+and such but I don't know if we need to check that more thoroughly
+- for some reason is not adding pizza to order's pizza list when I try to print it. But I checked it when I was adding it and it's working
+fine. Maybe there's something wrong in my print function? I don't know...I've stared at it for too long...
+
+Definitely will need to reset db so it gets rid of all the testing data and we can test one last final time with a clean db to simulate
+what the TA and Prof. Taylor are going to see and play with.
+
+ */
 
 /*
  * This file is where the front end magic happens.
@@ -53,7 +67,7 @@ public class Menu {
 					EnterCustomer();
 					break;
 				case 4:// view order
-						// open/closed/date
+					// open/closed/date
 					ViewOrders();
 					break;
 				case 5:// mark order as complete
@@ -108,6 +122,7 @@ public class Menu {
 		System.out.println(
 				"Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
 		int order_type = Integer.parseInt(reader.readLine());
+		//System.out.println("Date:" + date);
 		if (order_type == 1) {
 			System.out.println("What is the table number for this order?");
 			table_num = Integer.parseInt(reader.readLine());
@@ -121,11 +136,25 @@ public class Menu {
 				id_num = Integer.parseInt(reader.readLine());
 			} else if (existing_cust == "n") {
 				EnterCustomer();
+				System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
+				String house_num = reader.readLine();
+				System.out.println("What is the Street for this order? (e.g., Smile Street)");
+				String street = reader.readLine();
+				System.out.println("What is the City for this order? (e.g., Greenville)");
+				String city = reader.readLine();
+				System.out.println("What is the State for this order? (e.g., SC)");
+				String state = reader.readLine();
+				System.out.println("What is the Zip Code for this order? (e.g., 20605)");
+				String zip = reader.readLine();
+				ArrayList<Customer> all_customers = DBNinja.getCustomerList();
+				Customer c = all_customers.get((all_customers.size() - 1));
+				c.setAddress(house_num + " " + street, city, state, zip);
 			} else {
 				System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
 			}
 		} else {
-			// throw error or reprompt
+			System.out.println("I'm sorry I didn't understand your input for: " +
+					"Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice: Please try again.");
 		}
 
 		int totalBusPrice = 0;
@@ -134,9 +163,11 @@ public class Menu {
 		ArrayList<Discount> discountList = new ArrayList<Discount>();
 		int more_pizza = 1;
 		int more_discounts = 1;
+		ArrayList<Customer> all_customers = DBNinja.getCustomerList();
+		Customer c = all_customers.get((all_customers.size() - 1));
 		System.out.println("Let's build a pizza!");
 		while (more_pizza != -1) {
-			Pizza newPizza = buildPizza(order_ID + 1);
+			Pizza newPizza = buildPizza(order_ID);
 			pizzaList.add(newPizza);
 			totalBusPrice += newPizza.getBusPrice();
 			totalCustPrice += newPizza.getCustPrice();
@@ -155,36 +186,47 @@ public class Menu {
 						"Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 				viewDiscounts();
 				more_discounts = Integer.parseInt(reader.readLine());
-				Discount newDiscount = allDiscounts.get(more_discounts - 1); // I'm not sure if this is right?
-				discountList.add(newDiscount);
+				if (more_discounts != -1){
+					Discount newDiscount = allDiscounts.get(more_discounts - 1); // I'm not sure if this is right?
+					discountList.add(newDiscount);
+				}
 			}
 		}
-		String date = new Date().toString();
+		String date = new java.util.Date().toString();
+		System.out.println("Date: " + date);
 		String order_name = " ";
-		if (order_type == 1)
+		order_ID = DBNinja.get_next_Orderid();
+		if (order_type == 1) {
 			order_name = "Dine-in";
-		else if (order_type == 2)
+			DineinOrder newOrder = new DineinOrder(order_ID, id_num, date, totalCustPrice, totalBusPrice, 0, table_num);
+			newOrder.setDiscountList(discountList);
+			newOrder.setPizzaList(pizzaList);
+			DBNinja.addOrder(newOrder);
+//			System.out.println("Printing pizzalist...");
+//			ArrayList<Pizza> pizzaListNew = newOrder.getPizzaList();
+//			if (pizzaListNew.isEmpty()) {
+//				System.out.println("There are seriously no pizzas");
+//			}
+//			for (int i = 0; i<pizzaListNew.size(); i++) {
+//				System.out.println(pizzaListNew.get(i).getOrderID());
+//			}
+		}
+		else if (order_type == 2) {
 			order_name = "Pick-up";
-		else if (order_type == 3)
+			PickupOrder newOrder = new PickupOrder(order_ID, id_num, date, totalCustPrice, totalBusPrice, 0, 1);
+			newOrder.setDiscountList(discountList);
+			newOrder.setPizzaList(pizzaList);
+			DBNinja.addOrder(newOrder);
+		}
+		else if (order_type == 3) {
 			order_name = "Delivery";
-		Order newOrder = new Order(1, id_num, order_name, date, totalCustPrice, totalBusPrice, 1);
-		newOrder.setDiscountList(discountList);
-		newOrder.setPizzaList(pizzaList);
+			DeliveryOrder newOrder = new DeliveryOrder(order_ID, id_num, date, totalCustPrice, totalBusPrice, 0, c.getAddress());
+			newOrder.setDiscountList(discountList);
+			newOrder.setPizzaList(pizzaList);
+			DBNinja.addOrder(newOrder);
+		}
 
-		// // create appropriate order object
-		// switch (order_type) {
-		// case 1:
-		// newOrder = new DineinOrder();
-		// break;
-		// case 2:
-		// newOrder = new PickupOrder();
-		// break;
-		// case 3:
-		// newOrder = new DeliveryOrder();
-		// break;
-		// }
 
-		DBNinja.addOrder(newOrder);
 
 		// Finished
 		System.out.println("Finished adding order...Returning to menu...");
@@ -226,18 +268,6 @@ public class Menu {
 
 		Customer cust = new Customer(6, first_name, last_name, phone_num);
 		DBNinja.addCustomer(cust);
-
-		System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
-		String house_num = reader.readLine();
-		System.out.println("What is the Street for this order? (e.g., Smile Street)");
-		String street = reader.readLine();
-		System.out.println("What is the City for this order? (e.g., Greenville)");
-		String city = reader.readLine();
-		System.out.println("What is the State for this order? (e.g., SC)");
-		String state = reader.readLine();
-		System.out.println("What is the Zip Code for this order? (e.g., 20605)");
-		String zip = reader.readLine();
-		cust.setAddress(house_num + " " + street, city, state, zip);
 	}
 
 	// View any orders that are not marked as completed
@@ -268,19 +298,100 @@ public class Menu {
 				Order o = orderList.get(i);
 				System.out.println("ID=" + o.getOrderID() + " Type=" + o.getOrderType());
 			}
+			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
+			int pickedOrder = Integer.parseInt(reader.readLine());
+			Order view_o = orderList.get(pickedOrder - 1);
+			printOrderDetails(view_o);
 		} else if (input.equals("b")) {
 			// display all open orders
+			ArrayList<Order> orderList = DBNinja.getOrders(true);
+			if (orderList.isEmpty()) {
+				System.out.println("No orders to display, returning to menu.");
+			}
+			else {
+				for (int i = 0; i < orderList.size(); i++) {
+					Order o = orderList.get(i);
+					System.out.println("ID=" + o.getOrderID() + " Type=" + o.getOrderType());
+				}
+				System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
+				int pickedOrder = Integer.parseInt(reader.readLine());
+				Order view_o = orderList.get(pickedOrder - 1);
+				printOrderDetails(view_o);
+			}
 		} else if (input.equals("c")) {
 			// display all closed orders
-		} else if (input.equals("d")) {
+			ArrayList<Order> orderList = DBNinja.getClosedOrders();
+			if (orderList.isEmpty()) {
+				System.out.println("No orders to display, returning to menu.");
+			}
+			else {
+				for (int i = 0; i < orderList.size(); i++) {
+					Order o = orderList.get(i);
+					System.out.println("ID=" + o.getOrderID() + " Type=" + o.getOrderType());
+				}
+				System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
+				int pickedOrder = Integer.parseInt(reader.readLine());
+				Order view_o = orderList.get(pickedOrder - 1);
+				printOrderDetails(view_o);
+			}
+		} else if (input.equals("d")) { // THIS IS THE ONLY ONE THAT STILL NEEDS TO BE DONE
 			// display by certain date
 			System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
+			String date = " ";
+			ArrayList<Order> orderList = DBNinja.getOrdersByDate(date);
+			if (orderList.isEmpty()) {
+				System.out.println("No orders to display, returning to menu.");
+			}
+			else {
+				for (int i = 0; i < orderList.size(); i++) {
+					Order o = orderList.get(i);
+					System.out.println("ID=" + o.getOrderID() + " Type=" + o.getOrderType());
+				}
+				System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
+				int pickedOrder = Integer.parseInt(reader.readLine());
+				Order view_o = orderList.get(pickedOrder - 1);
+				printOrderDetails(view_o);
+			}
 		} else {
-			System.out.println("I don't understand that input, returning to menu");
+			System.out.println("Incorrect entry, returning to menu.");
 		}
-		System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
-		System.out.println("Incorrect entry, returning to menu.");
-		System.out.println("No orders to display, returning to menu.");
+
+	}
+
+	public static void printOrderDetails(Order o) throws SQLException, IOException {
+		String name = DBNinja.getCustomerName(o.getCustID());
+		System.out.println("OrderId=" + o.getOrderID() + " | For customer: " + name + " | OrderType= " + o.getOrderType() + ", Placed on: "
+				+ o.getDate() + " | CustPrice=" + o.getCustPrice() + ", BusPrice=" + o.getBusPrice());
+		ArrayList<Discount> orderdiscounts = o.getDiscountList();
+		if (orderdiscounts.isEmpty()) {
+			System.out.println("NO ORDER DISCOUNTS");
+		}
+		else {
+			for (int k = 0; k < orderdiscounts.size(); k++) {
+				System.out.println("DiscountId=" + orderdiscounts.get(k).getDiscountID() + " | Name=" + orderdiscounts.get(k).getDiscountID()
+						+ " | Amount= " + orderdiscounts.get(k).getAmount() + " | isPercent= " + orderdiscounts.get(k).isPercent());
+			}
+		}
+		ArrayList<Pizza> pizzas = o.getPizzaList();
+		if (pizzas.isEmpty()) {
+			System.out.println("No Pizzas");
+		}
+		for (int i = 0; i < pizzas.size(); i++) {
+			System.out.println("PizzaId=" + pizzas.get(i).getPizzaID() + " | Crust Type: " + pizzas.get(i).getCrustType() + ", Size= "
+					+ pizzas.get(i).getSize() + "| For order " + pizzas.get(i).getOrderID() + "| Pizza status " + pizzas.get(i).getPizzaState()
+					+ " | CustPrice=" + pizzas.get(i).getCustPrice() + ", BusPrice=" + pizzas.get(i).getBusPrice());
+			ArrayList <Discount> pizzaDiscounts = pizzas.get(i).getDiscounts();
+			if (pizzaDiscounts.isEmpty()) {
+				System.out.println("NO PIZZA DISCOUNTS");
+			}
+			else {
+				for (int j = 0; j < pizzaDiscounts.size(); j++) {
+					System.out.println("DiscountId=" + pizzaDiscounts.get(j).getDiscountID() + " | Name=" + pizzaDiscounts.get(j).getDiscountID()
+							+ " | Amount= " + pizzaDiscounts.get(j).getAmount() + " | isPercent= " + pizzaDiscounts.get(j).isPercent());
+				}
+			}
+		}
+
 
 	}
 
@@ -297,19 +408,27 @@ public class Menu {
 		 */
 
 		// User Input Prompts...
-		System.out.println("There are no open orders currently... returning to menu...");
-		// print the orders
-		System.out.println("Which order would you like mark as complete? Enter the OrderID: ");
-		Integer order_Id = Integer.parseInt(reader.readLine());
-		ArrayList<Order> orderList = DBNinja.getOrders(false);
-		Order o = null;
-		for (int i = 0; i < orderList.size(); i++) {
-			if (orderList.get(i).getOrderID() == order_Id) {
-				o = orderList.get(i);
-			}
+		ArrayList<Order> orderList = DBNinja.getOrders(true);
+		if (orderList.isEmpty()) {
+			System.out.println("There are no open orders currently... returning to menu...");
 		}
-		DBNinja.completeOrder(o);
-		System.out.println("Incorrect entry, not an option");
+		else {
+			// print the orders
+			for (int i = 0; i < orderList.size(); i++) {
+				Order o = orderList.get(i);
+				System.out.println("ID=" + o.getOrderID() + " Type=" + o.getOrderType());
+			}
+			System.out.println("Which order would you like mark as complete? Enter the OrderID: ");
+			Integer order_Id = Integer.parseInt(reader.readLine());
+			Order o = null;
+			for (int i = 0; i < orderList.size(); i++) {
+				if (orderList.get(i).getOrderID() == order_Id) {
+					o = orderList.get(i);
+				}
+			}
+			DBNinja.completeOrder(o);
+		}
+		//System.out.println("Incorrect entry, not an option");
 
 	}
 
@@ -411,6 +530,7 @@ public class Menu {
 
 		ret = new Pizza(pizza_Id, crust_size, crust_type, orderID, "Completed", new Date().toString(), custPrice,
 				busPrice);
+		ret.setOrderID(orderID);
 
 		// Choose toppings
 		ArrayList<Topping> fullToppingList = DBNinja.getToppingList();
