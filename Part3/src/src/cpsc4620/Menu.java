@@ -1,8 +1,9 @@
-package cpsc4620;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,7 +53,7 @@ public class Menu {
 					EnterCustomer();
 					break;
 				case 4:// view order
-						// open/closed/date
+					// open/closed/date
 					ViewOrders();
 					break;
 				case 5:// mark order as complete
@@ -97,8 +98,9 @@ public class Menu {
 		 * make sure you use the prompts below in the correct order!
 		 */
 
-		Order newOrder = null;
-		int order_ID = -1; // need to get this value via sql or autoincrement?
+
+		int order_ID = DBNinja.get_next_Orderid(); // need to get this value via sql or autoincrement?
+		//System.out.println(order_ID);
 		int cust_ID = -1;
 		int id_num = -1;
 		int table_num = -1;
@@ -113,18 +115,13 @@ public class Menu {
 		} else if (order_type == 2 || order_type == 3) {
 			System.out.println("Is this order for an existing customer? Answer y/n: ");
 			String existing_cust = reader.readLine();
-			if (existing_cust == "y") {
+			if (existing_cust.equals ("y")) {
 				System.out.println("Here's a list of the current customers: ");
 				viewCustomers();
 				System.out.println("Which customer is this order for? Enter ID Number:");
 				id_num = Integer.parseInt(reader.readLine());
 			} else if (existing_cust == "n") {
 				EnterCustomer();
-				System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
-				System.out.println("What is the Street for this order? (e.g., Smile Street)");
-				System.out.println("What is the City for this order? (e.g., Greenville)");
-				System.out.println("What is the State for this order? (e.g., SC)");
-				System.out.println("What is the Zip Code for this order? (e.g., 20605)");
 			} else {
 				System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
 			}
@@ -135,12 +132,12 @@ public class Menu {
 		int totalBusPrice = 0;
 		int totalCustPrice = 0;
 		ArrayList<Pizza> pizzaList = new ArrayList<Pizza>();
-
+		ArrayList<Discount> discountList = new ArrayList<Discount>();
 		int more_pizza = 1;
 		int more_discounts = 1;
 		System.out.println("Let's build a pizza!");
 		while (more_pizza != -1) {
-			Pizza newPizza = buildPizza(order_ID);
+			Pizza newPizza = buildPizza(order_ID + 1);
 			pizzaList.add(newPizza);
 			totalBusPrice += newPizza.getBusPrice();
 			totalCustPrice += newPizza.getCustPrice();
@@ -149,12 +146,28 @@ public class Menu {
 					"Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
 			more_pizza = Integer.parseInt(reader.readLine());
 		}
+
+
+		ArrayList<Discount> allDiscounts = DBNinja.getDiscountList();
 		System.out.println("Do you want to add discounts to this order? Enter y/n?");
-		while (more_discounts != -1) {
-			System.out.println(
-					"Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
-			more_discounts = Integer.parseInt(reader.readLine());
+		String enter_discounts = reader.readLine();
+		if (enter_discounts.equals("y")) {
+			while (more_discounts != -1) {
+				System.out.println("Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
+				viewDiscounts();
+				more_discounts = Integer.parseInt(reader.readLine());
+				Discount newDiscount = allDiscounts.get(more_discounts - 1); //I'm not sure if this is right?
+				discountList.add(newDiscount);
+			}
 		}
+		String date = new Date().toString();
+		String order_name = " ";
+		if (order_type == 1)  order_name = "Dine-in";
+		else if (order_type == 2) order_name = "Pick-up";
+		else if (order_type == 3) order_name = "Delivery";
+		Order newOrder = new Order(1, id_num, order_name, date, totalCustPrice, totalBusPrice, 1);
+		newOrder.setDiscountList(discountList);
+		newOrder.setPizzaList(pizzaList);
 
 		// // create appropriate order object
 		// switch (order_type) {
@@ -211,6 +224,18 @@ public class Menu {
 
 		Customer cust = new Customer(6, first_name, last_name, phone_num);
 		DBNinja.addCustomer(cust);
+
+		System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
+		String house_num = reader.readLine();
+		System.out.println("What is the Street for this order? (e.g., Smile Street)");
+		String street = reader.readLine();
+		System.out.println("What is the City for this order? (e.g., Greenville)");
+		String city = reader.readLine();
+		System.out.println("What is the State for this order? (e.g., SC)");
+		String state = reader.readLine();
+		System.out.println("What is the Zip Code for this order? (e.g., 20605)");
+		String zip = reader.readLine();
+		cust.setAddress(house_num + " " + street, city, state, zip);
 	}
 
 	// View any orders that are not marked as completed
@@ -338,6 +363,7 @@ public class Menu {
 		 */
 		Pizza ret = null;
 		int pizza_Id = -1;
+		//System.out.println(orderID);
 
 		// User Input Prompts...
 		// Choose pizza size
@@ -415,7 +441,12 @@ public class Menu {
 
 				System.out.println("Do you want to add extra topping? Enter y/n");
 				String extraInput = reader.readLine();
-				boolean extra = (extraInput == "y") ? true : false;
+				boolean extra = false;
+				if (extraInput.equals("y")) {
+					extra = true;
+					ret.modifyDoubledArray(indexOfChoice, true);
+				}
+				//boolean extra = (extraInput == "y") ? true : false;
 
 				// calculate the amount of toppings to use
 				double amountToUse = 0;
@@ -446,7 +477,7 @@ public class Menu {
 			}
 		}
 
-		// TODO: Add Discounts to Pizza
+		// TODO: Add Discounts to Pizza - I think I finished
 		System.out.println("Do you want to add discounts to this Pizza? Enter y/n?");
 		String addDiscounts = reader.readLine();
 
@@ -455,6 +486,11 @@ public class Menu {
 			System.out.println(
 					"Which Pizza Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
 			int discountID = Integer.parseInt(reader.readLine());
+			ArrayList<Discount> discountList = DBNinja.getDiscountList();
+			for (int i = 0; i < discountList.size(); i++) {
+				Discount d = discountList.get(i);
+				ret.addDiscounts(d);
+			}
 
 			System.out.println("Do you want to add more discounts to this Pizza? Enter y/n?");
 			addDiscounts = reader.readLine();
