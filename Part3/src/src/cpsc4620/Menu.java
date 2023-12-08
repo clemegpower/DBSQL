@@ -1,4 +1,4 @@
-
+package cpsc4620;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -67,7 +67,7 @@ public class Menu {
 					EnterCustomer();
 					break;
 				case 4:// view order
-					// open/closed/date
+						// open/closed/date
 					ViewOrders();
 					break;
 				case 5:// mark order as complete
@@ -114,119 +114,140 @@ public class Menu {
 
 		int order_ID = DBNinja.get_next_Orderid(); // need to get this value via sql or autoincrement?
 		// System.out.println(order_ID);
-		int cust_ID = -1;
-		int id_num = -1;
+		int cust_id = -1;
 		int table_num = -1;
 
 		// User Input Prompts...
 		System.out.println(
 				"Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
 		int order_type = Integer.parseInt(reader.readLine());
-		//System.out.println("Date:" + date);
 		if (order_type == 1) {
 			System.out.println("What is the table number for this order?");
 			table_num = Integer.parseInt(reader.readLine());
 		} else if (order_type == 2 || order_type == 3) {
-			System.out.println("Is this order for an existing customer? Answer y/n: ");
-			String existing_cust = reader.readLine();
-			if (existing_cust.equals("y")) {
-				System.out.println("Here's a list of the current customers: ");
-				viewCustomers();
-				System.out.println("Which customer is this order for? Enter ID Number:");
-				id_num = Integer.parseInt(reader.readLine());
-			} else if (existing_cust == "n") {
-				EnterCustomer();
-				System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
-				String house_num = reader.readLine();
-				System.out.println("What is the Street for this order? (e.g., Smile Street)");
-				String street = reader.readLine();
-				System.out.println("What is the City for this order? (e.g., Greenville)");
-				String city = reader.readLine();
-				System.out.println("What is the State for this order? (e.g., SC)");
-				String state = reader.readLine();
-				System.out.println("What is the Zip Code for this order? (e.g., 20605)");
-				String zip = reader.readLine();
-				ArrayList<Customer> all_customers = DBNinja.getCustomerList();
-				Customer c = all_customers.get((all_customers.size() - 1));
-				c.setAddress(house_num + " " + street, city, state, zip);
-			} else {
-				System.out.println("ERROR: I don't understand your input for: Is this order an existing customer?");
+			String existing_cust = "";
+			while (!existing_cust.equals("y") && !existing_cust.equals("n")) {
+				System.out.println("Is this order for an existing customer? Answer y/n: ");
+				existing_cust = reader.readLine();
+				if (existing_cust.equals("y")) {
+					System.out.println("Here's a list of the current customers: ");
+					viewCustomers();
+					System.out.println("Which customer is this order for? Enter ID Number:");
+					cust_id = Integer.parseInt(reader.readLine());
+				} else if (existing_cust.equals("n")) {
+					EnterCustomer();
+					ArrayList<Customer> c = DBNinja.getCustomerList();
+					cust_id = c.get(c.size() - 1).getCustID();
+				} else {
+					System.out.println(
+							"ERROR: I don't understand your input for: Is this order for an existing customer?");
+				}
+
 			}
 		} else {
 			System.out.println("I'm sorry I didn't understand your input for: " +
 					"Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice: Please try again.");
 		}
 
+		ArrayList<Customer> all_customers = DBNinja.getCustomerList();
+		Customer customer = all_customers.get((all_customers.size() - 1));
+		for (int i = 0; i < all_customers.size(); i++) {
+			if (all_customers.get(i).getCustID() == cust_id) {
+				customer = all_customers.get(i);
+			}
+		}
+
+		if (order_type == 3) {
+			System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
+			String house_num = reader.readLine();
+			System.out.println("What is the Street for this order? (e.g., Smile Street)");
+			String street = reader.readLine();
+			System.out.println("What is the City for this order? (e.g., Greenville)");
+			String city = reader.readLine();
+			System.out.println("What is the State for this order? (e.g., SC)");
+			String state = reader.readLine();
+			System.out.println("What is the Zip Code for this order? (e.g., 20605)");
+			String zip = reader.readLine();
+			customer.setAddress(house_num + " " + street, city, state, zip);
+		}
+
 		int totalBusPrice = 0;
 		int totalCustPrice = 0;
 		ArrayList<Pizza> pizzaList = new ArrayList<Pizza>();
-		ArrayList<Discount> discountList = new ArrayList<Discount>();
-		int more_pizza = 1;
-		int more_discounts = 1;
-		ArrayList<Customer> all_customers = DBNinja.getCustomerList();
-		Customer c = all_customers.get((all_customers.size() - 1));
+
+		String more_pizza = "";
 		System.out.println("Let's build a pizza!");
-		while (more_pizza != -1) {
+		while (!more_pizza.equals("-1")) {
 			Pizza newPizza = buildPizza(order_ID);
+			newPizza.setOrderID(order_ID);
 			pizzaList.add(newPizza);
 			totalBusPrice += newPizza.getBusPrice();
 			totalCustPrice += newPizza.getCustPrice();
 
 			System.out.println(
 					"Enter -1 to stop adding pizzas...Enter anything else to continue adding pizzas to the order.");
-			more_pizza = Integer.parseInt(reader.readLine());
+			more_pizza = reader.readLine();
 		}
 
+		ArrayList<Discount> discountList = new ArrayList<Discount>();
 		ArrayList<Discount> allDiscounts = DBNinja.getDiscountList();
 		System.out.println("Do you want to add discounts to this order? Enter y/n?");
 		String enter_discounts = reader.readLine();
 		if (enter_discounts.equals("y")) {
-			while (more_discounts != -1) {
+			int discountChoice = 1;
+			while (discountChoice != -1) {
+				viewDiscounts();
 				System.out.println(
 						"Which Order Discount do you want to add? Enter the DiscountID. Enter -1 to stop adding Discounts: ");
-				viewDiscounts();
-				more_discounts = Integer.parseInt(reader.readLine());
-				if (more_discounts != -1){
-					Discount newDiscount = allDiscounts.get(more_discounts - 1); // I'm not sure if this is right?
-					discountList.add(newDiscount);
+				discountChoice = Integer.parseInt(reader.readLine());
+				if (discountChoice != -1) {
+					Discount newDiscount = null;
+					for (int i = 0; i < allDiscounts.size(); i++) {
+						newDiscount = allDiscounts.get(i);
+						if (newDiscount.getDiscountID() == discountChoice) {
+							discountList.add(newDiscount);
+						}
+					}
 				}
 			}
 		}
 		String date = new java.util.Date().toString();
-		System.out.println("Date: " + date);
 		String order_name = " ";
 		order_ID = DBNinja.get_next_Orderid();
+		Order newOrder = null;
 		if (order_type == 1) {
 			order_name = "Dine-in";
-			DineinOrder newOrder = new DineinOrder(order_ID, id_num, date, totalCustPrice, totalBusPrice, 0, table_num);
-			newOrder.setDiscountList(discountList);
-			newOrder.setPizzaList(pizzaList);
-			DBNinja.addOrder(newOrder);
-//			System.out.println("Printing pizzalist...");
-//			ArrayList<Pizza> pizzaListNew = newOrder.getPizzaList();
-//			if (pizzaListNew.isEmpty()) {
-//				System.out.println("There are seriously no pizzas");
-//			}
-//			for (int i = 0; i<pizzaListNew.size(); i++) {
-//				System.out.println(pizzaListNew.get(i).getOrderID());
-//			}
-		}
-		else if (order_type == 2) {
+			newOrder = new DineinOrder(order_ID, cust_id, date, totalCustPrice, totalBusPrice, 0,
+					table_num);
+		} else if (order_type == 2) {
 			order_name = "Pick-up";
-			PickupOrder newOrder = new PickupOrder(order_ID, id_num, date, totalCustPrice, totalBusPrice, 0, 1);
-			newOrder.setDiscountList(discountList);
-			newOrder.setPizzaList(pizzaList);
-			DBNinja.addOrder(newOrder);
-		}
-		else if (order_type == 3) {
+			newOrder = new PickupOrder(order_ID, cust_id, date, totalCustPrice, totalBusPrice, 0, 1);
+		} else if (order_type == 3) {
 			order_name = "Delivery";
-			DeliveryOrder newOrder = new DeliveryOrder(order_ID, id_num, date, totalCustPrice, totalBusPrice, 0, c.getAddress());
-			newOrder.setDiscountList(discountList);
-			newOrder.setPizzaList(pizzaList);
-			DBNinja.addOrder(newOrder);
+			newOrder = new DeliveryOrder(order_ID, cust_id, date, totalCustPrice, totalBusPrice, 0,
+					customer.getAddress());
+		}
+		newOrder.setDiscountList(discountList);
+		newOrder.setPizzaList(pizzaList);
+		DBNinja.addOrder(newOrder);
+
+		for (int i = 0; i < discountList.size(); i++) {
+			DBNinja.useOrderDiscount(newOrder, discountList.get(i));
 		}
 
-
+		for (int i = 0; i < pizzaList.size(); i++) {
+			Pizza p = pizzaList.get(i);
+			DBNinja.addPizza(p);
+			ArrayList<Topping> toppingList = p.getToppings();
+			boolean[] isExtra = p.getIsDoubleArray();
+			for (int j = 0; j < toppingList.size(); j++) {
+				DBNinja.useTopping(p, toppingList.get(j), isExtra[toppingList.get(j).getTopID() - 1]);
+			}
+			ArrayList<Discount> pizzaDiscounts = p.getDiscounts();
+			for (int k = 0; k < pizzaDiscounts.size(); k++) {
+				DBNinja.usePizzaDiscount(p, pizzaDiscounts.get(i));
+			}
+		}
 
 		// Finished
 		System.out.println("Finished adding order...Returning to menu...");
@@ -258,7 +279,7 @@ public class Menu {
 		 */
 
 		// User Input Prompts...
-		System.out.println("What is this customer's name (first <space> last");
+		System.out.println("What is this customer's name (first <space> last)");
 		String[] name = reader.readLine().split(" ");
 		String first_name = name[0];
 		String last_name = name[1];
@@ -267,6 +288,7 @@ public class Menu {
 		String phone_num = reader.readLine();
 
 		Customer cust = new Customer(6, first_name, last_name, phone_num);
+
 		DBNinja.addCustomer(cust);
 	}
 
@@ -291,85 +313,64 @@ public class Menu {
 		System.out.println(
 				"Would you like to:\n(a) display all orders [open or closed]\n(b) display all open orders\n(c) display all completed [closed] orders\n(d) display orders since a specific date");
 		String input = reader.readLine();
+
+		ArrayList<Order> orderList = null;
 		if (input.equals("a")) {
 			// display all orders
-			ArrayList<Order> orderList = DBNinja.getOrders(false);
+			orderList = DBNinja.getOrders(false);
+		} else if (input.equals("b")) {
+			// display all open orders
+			orderList = DBNinja.getOrders(true);
+		} else if (input.equals("c")) {
+			// display all closed orders
+			orderList = DBNinja.getClosedOrders();
+		} else if (input.equals("d")) { // THIS IS THE ONLY ONE THAT STILL NEEDS TO BE DONE
+			// display by certain date
+			System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
+			String date = reader.readLine();
+			orderList = DBNinja.getOrdersByDate(date);
+		} else {
+			System.out.println("Incorrect entry, returning to menu.");
+			return;
+		}
+
+		if (orderList.isEmpty()) {
+			System.out.println("No orders to display, returning to menu.");
+		} else {
 			for (int i = 0; i < orderList.size(); i++) {
 				Order o = orderList.get(i);
 				System.out.println("ID=" + o.getOrderID() + " Type=" + o.getOrderType());
 			}
 			System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
 			int pickedOrder = Integer.parseInt(reader.readLine());
-			Order view_o = orderList.get(pickedOrder - 1);
-			printOrderDetails(view_o);
-		} else if (input.equals("b")) {
-			// display all open orders
-			ArrayList<Order> orderList = DBNinja.getOrders(true);
-			if (orderList.isEmpty()) {
-				System.out.println("No orders to display, returning to menu.");
-			}
-			else {
-				for (int i = 0; i < orderList.size(); i++) {
-					Order o = orderList.get(i);
-					System.out.println("ID=" + o.getOrderID() + " Type=" + o.getOrderType());
+
+			Order view_o = null;
+			for (int i = 0; i < orderList.size(); i++) {
+				view_o = orderList.get(i);
+				if (view_o.getOrderID() == pickedOrder) {
+					printOrderDetails(view_o);
+					break;
 				}
-				System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
-				int pickedOrder = Integer.parseInt(reader.readLine());
-				Order view_o = orderList.get(pickedOrder - 1);
-				printOrderDetails(view_o);
 			}
-		} else if (input.equals("c")) {
-			// display all closed orders
-			ArrayList<Order> orderList = DBNinja.getClosedOrders();
-			if (orderList.isEmpty()) {
-				System.out.println("No orders to display, returning to menu.");
-			}
-			else {
-				for (int i = 0; i < orderList.size(); i++) {
-					Order o = orderList.get(i);
-					System.out.println("ID=" + o.getOrderID() + " Type=" + o.getOrderType());
-				}
-				System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
-				int pickedOrder = Integer.parseInt(reader.readLine());
-				Order view_o = orderList.get(pickedOrder - 1);
-				printOrderDetails(view_o);
-			}
-		} else if (input.equals("d")) { // THIS IS THE ONLY ONE THAT STILL NEEDS TO BE DONE
-			// display by certain date
-			System.out.println("What is the date you want to restrict by? (FORMAT= YYYY-MM-DD)");
-			String date = " ";
-			ArrayList<Order> orderList = DBNinja.getOrdersByDate(date);
-			if (orderList.isEmpty()) {
-				System.out.println("No orders to display, returning to menu.");
-			}
-			else {
-				for (int i = 0; i < orderList.size(); i++) {
-					Order o = orderList.get(i);
-					System.out.println("ID=" + o.getOrderID() + " Type=" + o.getOrderType());
-				}
-				System.out.println("Which order would you like to see in detail? Enter the number (-1 to exit): ");
-				int pickedOrder = Integer.parseInt(reader.readLine());
-				Order view_o = orderList.get(pickedOrder - 1);
-				printOrderDetails(view_o);
-			}
-		} else {
-			System.out.println("Incorrect entry, returning to menu.");
+
 		}
 
 	}
 
 	public static void printOrderDetails(Order o) throws SQLException, IOException {
 		String name = DBNinja.getCustomerName(o.getCustID());
-		System.out.println("OrderId=" + o.getOrderID() + " | For customer: " + name + " | OrderType= " + o.getOrderType() + ", Placed on: "
+		System.out.println("OrderId=" + o.getOrderID() + " | For customer: " + name + " | OrderType= "
+				+ o.getOrderType() + ", Placed on: "
 				+ o.getDate() + " | CustPrice=" + o.getCustPrice() + ", BusPrice=" + o.getBusPrice());
 		ArrayList<Discount> orderdiscounts = o.getDiscountList();
 		if (orderdiscounts.isEmpty()) {
 			System.out.println("NO ORDER DISCOUNTS");
-		}
-		else {
+		} else {
 			for (int k = 0; k < orderdiscounts.size(); k++) {
-				System.out.println("DiscountId=" + orderdiscounts.get(k).getDiscountID() + " | Name=" + orderdiscounts.get(k).getDiscountID()
-						+ " | Amount= " + orderdiscounts.get(k).getAmount() + " | isPercent= " + orderdiscounts.get(k).isPercent());
+				System.out.println("DiscountId=" + orderdiscounts.get(k).getDiscountID() + " | Name="
+						+ orderdiscounts.get(k).getDiscountID()
+						+ " | Amount= " + orderdiscounts.get(k).getAmount() + " | isPercent= "
+						+ orderdiscounts.get(k).isPercent());
 			}
 		}
 		ArrayList<Pizza> pizzas = o.getPizzaList();
@@ -377,21 +378,23 @@ public class Menu {
 			System.out.println("No Pizzas");
 		}
 		for (int i = 0; i < pizzas.size(); i++) {
-			System.out.println("PizzaId=" + pizzas.get(i).getPizzaID() + " | Crust Type: " + pizzas.get(i).getCrustType() + ", Size= "
-					+ pizzas.get(i).getSize() + "| For order " + pizzas.get(i).getOrderID() + "| Pizza status " + pizzas.get(i).getPizzaState()
+			System.out.println("PizzaId=" + pizzas.get(i).getPizzaID() + " | Crust Type: "
+					+ pizzas.get(i).getCrustType() + ", Size= "
+					+ pizzas.get(i).getSize() + "| For order " + pizzas.get(i).getOrderID() + "| Pizza status "
+					+ pizzas.get(i).getPizzaState()
 					+ " | CustPrice=" + pizzas.get(i).getCustPrice() + ", BusPrice=" + pizzas.get(i).getBusPrice());
-			ArrayList <Discount> pizzaDiscounts = pizzas.get(i).getDiscounts();
+			ArrayList<Discount> pizzaDiscounts = pizzas.get(i).getDiscounts();
 			if (pizzaDiscounts.isEmpty()) {
 				System.out.println("NO PIZZA DISCOUNTS");
-			}
-			else {
+			} else {
 				for (int j = 0; j < pizzaDiscounts.size(); j++) {
-					System.out.println("DiscountId=" + pizzaDiscounts.get(j).getDiscountID() + " | Name=" + pizzaDiscounts.get(j).getDiscountID()
-							+ " | Amount= " + pizzaDiscounts.get(j).getAmount() + " | isPercent= " + pizzaDiscounts.get(j).isPercent());
+					System.out.println("DiscountId=" + pizzaDiscounts.get(j).getDiscountID() + " | Name="
+							+ pizzaDiscounts.get(j).getDiscountID()
+							+ " | Amount= " + pizzaDiscounts.get(j).getAmount() + " | isPercent= "
+							+ pizzaDiscounts.get(j).isPercent());
 				}
 			}
 		}
-
 
 	}
 
@@ -411,8 +414,7 @@ public class Menu {
 		ArrayList<Order> orderList = DBNinja.getOrders(true);
 		if (orderList.isEmpty()) {
 			System.out.println("There are no open orders currently... returning to menu...");
-		}
-		else {
+		} else {
 			// print the orders
 			for (int i = 0; i < orderList.size(); i++) {
 				Order o = orderList.get(i);
@@ -428,7 +430,7 @@ public class Menu {
 			}
 			DBNinja.completeOrder(o);
 		}
-		//System.out.println("Incorrect entry, not an option");
+		// System.out.println("Incorrect entry, not an option");
 
 	}
 
@@ -611,14 +613,16 @@ public class Menu {
 			ArrayList<Discount> discountList = DBNinja.getDiscountList();
 			for (int i = 0; i < discountList.size(); i++) {
 				Discount d = discountList.get(i);
-				ret.addDiscounts(d);
+				if (d.getDiscountID() == discountID) {
+					ret.addDiscounts(d);
+					break;
+				}
 			}
 
 			System.out.println("Do you want to add more discounts to this Pizza? Enter y/n?");
 			addDiscounts = reader.readLine();
 		}
 
-		DBNinja.addPizza(ret);
 		return ret;
 	}
 

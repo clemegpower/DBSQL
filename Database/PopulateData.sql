@@ -136,28 +136,28 @@ VALUES ("Bacon", 1.5, 0.25, 89, 0, 1, 1.5, 2, 3);
 Inserting into discount table
 */
 -- id:1
-INSERT INTO discount (DiscountName, DiscountPercent)
-VALUES ("Employee", 0.15);
+INSERT INTO discount (DiscountName, DiscountPercent, DiscountType)
+VALUES ("Employee", 0.15, "percent");
 
 -- id:2
-INSERT INTO discount (DiscountName, DiscountDollarAmt)
-VALUES ("Lunch Special Medium", 1.00);
+INSERT INTO discount (DiscountName, DiscountDollarAmt, DiscountType)
+VALUES ("Lunch Special Medium", 1.00, "dollar");
 
 -- id:3
-INSERT INTO discount (DiscountName, DiscountDollarAmt)
-VALUES ("Lunch Special Large", 2.00);
+INSERT INTO discount (DiscountName, DiscountDollarAmt, DiscountType)
+VALUES ("Lunch Special Large", 2.00, "dollar");
 
 -- id:4
-INSERT INTO discount (DiscountName, DiscountDollarAmt)
-VALUES ("Specialty Pizza", 1.50);
+INSERT INTO discount (DiscountName, DiscountDollarAmt, DiscountType)
+VALUES ("Specialty Pizza", 1.50, "dollar");
 
 -- id:5
-INSERT INTO discount (DiscountName, DiscountPercent)
-VALUES ("Happy Hour", 0.10);
+INSERT INTO discount (DiscountName, DiscountPercent, DiscountType)
+VALUES ("Happy Hour", 0.10, "percent");
 
 -- id:6
-INSERT INTO discount (DiscountName, DiscountPercent)
-VALUES ("Gameday Special", 0.20);
+INSERT INTO discount (DiscountName, DiscountPercent, DiscountType)
+VALUES ("Gameday Special", 0.20, "percent");
 
 
 /*

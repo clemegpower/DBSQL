@@ -1,3 +1,4 @@
+package cpsc4620;
 
 import java.io.IOException;
 import java.sql.*;
@@ -63,17 +64,21 @@ public final class DBNinja {
 		 * the necessary data for the delivery, dinein, and pickup tables
 		 *
 		 */
-		//System.out.println("date" + java.sql.Date.valueOf((o.getDate())));
 
-		String query1 = "insert into orderinfo (OrderInfoId, OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoStatus) " +
-				"values (?,?,?,?,?)";
+		String query1 = "insert into orderinfo (OrderInfoId, OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime, OrderInfoStatus) "
+				+
+				"values (?,?,?,?,?,?);";
 		PreparedStatement order_conn = conn.prepareStatement(query1);
 		order_conn.setInt(1, o.getOrderID());
 		order_conn.setString(2, o.getOrderType());
 		order_conn.setDouble(3, o.getCustPrice());
 		order_conn.setDouble(4, o.getBusPrice());
-		//order_conn.setDate(5, String date = new java.util.Date().toString(););
-		order_conn.setInt(5, o.getIsComplete());
+		Date orderDate = new Date();
+		o.setDate(orderDate.toString());
+		java.sql.Timestamp timestamp = new java.sql.Timestamp(orderDate.getTime());
+		order_conn.setTimestamp(5, timestamp);
+
+		order_conn.setInt(6, o.getIsComplete());
 		// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE???
 
 		order_conn.executeUpdate();
@@ -81,7 +86,7 @@ public final class DBNinja {
 		if (o instanceof DineinOrder) {
 			System.out.println("Inserting into dine in...");
 			String query = "insert into dinein (DineInOrderId, DineInTableNum) " +
-					"values (?,?)";
+					"values (?,?);";
 			PreparedStatement stmt = conn.prepareStatement(query);
 			stmt.setInt(1, o.getOrderID());
 			stmt.setInt(2, ((DineinOrder) o).getTableNum());
@@ -91,7 +96,7 @@ public final class DBNinja {
 		} else if (o instanceof DeliveryOrder) {
 			System.out.println("Inserting into delivery...");
 			String query = "insert into delivery (DeliveryOrderId, DeliveryCustomerId) " +
-					"values (?,?)";
+					"values (?,?);";
 			PreparedStatement stmt = conn.prepareStatement(query);
 			stmt.setInt(1, o.getOrderID());
 			stmt.setInt(2, o.getCustID());
@@ -101,7 +106,7 @@ public final class DBNinja {
 		} else if (o instanceof PickupOrder) {
 			System.out.println("Inserting into pickup...");
 			String query = "insert into pickup (PickupOrderId, PickupCustomerId, PickupIsPickedUp) " +
-					"values (?,?,?)";
+					"values (?,?,?);";
 			PreparedStatement stmt = conn.prepareStatement(query);
 			stmt.setInt(1, o.getOrderID());
 			stmt.setInt(2, o.getCustID());
@@ -119,7 +124,7 @@ public final class DBNinja {
 
 	public static int get_next_Orderid() throws SQLException, IOException {
 		connect_to_db();
-		String query4 = "select max(OrderInfoId) from orderinfo";
+		String query4 = "select max(OrderInfoId) from orderinfo;";
 		PreparedStatement stmt = conn.prepareStatement(query4);
 		ResultSet rset = stmt.executeQuery(query4);
 		int id = 0;
@@ -140,38 +145,36 @@ public final class DBNinja {
 		 */
 
 		// insert into pizza
-		String query3 = "insert into pizza (PizzaCrustType, PizzaSize, PizzaState, PizzaBaseCost, PizzaBasePrice) " +
-				"values (?,?,?,?,?)";
+		String query3 = "insert into pizza (PizzaCrustType, PizzaSize, PizzaState, PizzaBaseCost, PizzaBasePrice, PizzaOrderId) "
+				+
+				"values (?,?,?,?,?,?);";
 		PreparedStatement stmt = conn.prepareStatement(query3);
 		stmt.setString(1, p.getCrustType());
 		stmt.setString(2, p.getSize());
 		stmt.setString(3, p.getPizzaState());
 		stmt.setDouble(4, p.getBusPrice());
 		stmt.setDouble(5, p.getCustPrice());
-		//stmt.setInt(6, p.getOrderID()); - this doesn't work because of some sort of foreign key constraint
+		stmt.setInt(6, p.getOrderID());
+		// stmt.setInt(6, p.getOrderID()); - this doesn't work because of some sort of
+		// foreign key constraint
 		// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE
 
 		stmt.executeUpdate();
 
 		// update ID of pizza
-		String query4 = "select max(PizzaId) from pizza";
+		String query4 = "select max(PizzaId) from pizza;";
 		ResultSet rset = stmt.executeQuery(query4);
 		while (rset.next()) {
 			p.setPizzaID(rset.getInt("max(PizzaId)"));
 		}
 
-		ArrayList<Topping> toppingList = p.getToppings();
 		ArrayList<Discount> discountList = p.getDiscounts();
-		boolean[] isExtra = p.getIsDoubleArray();
-		for (int i = 0; i < toppingList.size(); i++) {
-			useTopping(p, toppingList.get(i), isExtra[toppingList.get(i).getTopID() - 1]);
-		}
 
 		// insert into pizzadiscount
 
 		for (int i = 0; i < discountList.size(); i++) {
 			String query2 = "insert into pizzadiscount (PizzaDiscountPizzaId, PizzaDiscountDiscountId) " +
-					"values (?,?)";
+					"values (?,?);";
 			PreparedStatement disconn = conn.prepareStatement(query2);
 			disconn.setInt(1, p.getPizzaID());
 			disconn.setInt(2, discountList.get(i).getDiscountID());
@@ -213,7 +216,7 @@ public final class DBNinja {
 		 *
 		 */
 		String query1 = "insert into pizzatopping (PizzaToppingPizzaId, PizzaToppingToppingId, PizzaToppingQuantity) "
-				+ "values (?,?,?)";
+				+ "values (?,?,?);";
 		PreparedStatement topconn = conn.prepareStatement(query1);
 		if (isDoubled) {
 			topconn.setInt(3, 2);
@@ -224,7 +227,7 @@ public final class DBNinja {
 		topconn.setInt(2, t.getTopID());
 		topconn.executeUpdate();
 
-		String query2 = "update topping set ToppingCurrentInventory = ToppingCurrentInventory - ? where ToppingId = ?";
+		String query2 = "update topping set ToppingCurrentInventory = ToppingCurrentInventory - ? where ToppingId = ?;";
 		PreparedStatement updatetop = conn.prepareStatement(query2);
 		double amountToUse = 0;
 		switch (p.getSize()) {
@@ -259,7 +262,7 @@ public final class DBNinja {
 		 *
 		 * What that means will be specific to your implementatinon.
 		 */
-		String query = "insert into pizzadiscount (PizzaDiscountPizza, PizzaDiscountDiscount) values (?,?)";
+		String query = "insert into pizzadiscount (PizzaDiscountPizzaId, PizzaDiscountDiscountId) values (?,?);";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setInt(1, p.getPizzaID());
 		stmt.setInt(2, d.getDiscountID());
@@ -278,7 +281,7 @@ public final class DBNinja {
 		 * this information in the dabast
 		 */
 
-		String query = "insert into orderdiscount (PizzaDiscountOrder, OrderDiscountDiscount) values (?,?)";
+		String query = "insert into orderdiscount (PizzaDiscountOrder, OrderDiscountDiscount) values (?,?);";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setInt(1, o.getOrderID());
 		stmt.setInt(2, d.getDiscountID());
@@ -295,11 +298,22 @@ public final class DBNinja {
 		 *
 		 */
 
-		String query = "insert into customer (CustomerFName, CustomerLName, CustomerPhone) values (?, ?, ?);";
+		String[] address = c.getAddress().split("/n");
+
+		String street = address[0];
+		String city = address[1];
+		String state = address[2];
+		String zipCode = address[3];
+
+		String query = "insert into customer (CustomerFName, CustomerLName, CustomerPhone, CustomerStreet, CustomerCity, CustomerState, CustomerZipCode) values (?, ?, ?, ?, ?, ?, ?);";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setString(1, c.getFName());
 		stmt.setString(2, c.getLName());
 		stmt.setString(3, c.getPhone());
+		stmt.setString(4, street);
+		stmt.setString(5, city);
+		stmt.setString(6, state);
+		stmt.setString(7, zipCode);
 		stmt.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
@@ -328,7 +342,7 @@ public final class DBNinja {
 		ArrayList<Order> orderList = new ArrayList<Order>();
 		String query2 = "SELECT * FROM orderinfo left join dinein on OrderInfoId=DineInOrderId left join pickup on " +
 				"OrderInfoId=PickupOrderId left join delivery on OrderInfoId=DeliveryOrderId left join customer on " +
-				"DeliveryCustomerId=CustomerId where OrderInfoStatus=1";
+				"DeliveryCustomerId=CustomerId where OrderInfoStatus=1;";
 		Statement second_stmt = conn.createStatement();
 		ResultSet rset = second_stmt.executeQuery(query2);
 
@@ -380,73 +394,94 @@ public final class DBNinja {
 
 		// here's my first attempt of the code
 		ArrayList<Order> orderList = new ArrayList<Order>();
+		String query = "";
 		if (openOnly == false) {
-			String query = "SELECT * FROM orderinfo left join dinein on OrderInfoId=DineInOrderId left join pickup on OrderInfoId=PickupOrderId left join delivery on OrderInfoId=DeliveryOrderId left join customer on DeliveryCustomerId=CustomerId;";
-			Statement stmt = conn.createStatement();
-			ResultSet rset = stmt.executeQuery(query);
-
-			while (rset.next()) {
-				Order newOrder = null;
-				int orderId = rset.getInt("OrderInfoId");
-				String orderType = rset.getString("OrderInfoType");
-				double price = rset.getDouble("OrderInfoPrice");
-				double cost = rset.getDouble("OrderInfoCost");
-				String orderTime = rset.getString("OrderInfoTime");
-				int isComplete = rset.getBoolean("OrderInfoStatus") ? 1 : 0;
-
-				if (orderType.equals(pickup)) {
-					int custId = rset.getInt("PickupCustomerId");
-					int isPickedUp = rset.getBoolean("PickupIsPickedUp") ? 1 : 0;
-					newOrder = new PickupOrder(orderId, custId, orderTime, price, cost, isPickedUp, isComplete);
-				} else if (orderType.equals(delivery)) {
-					int custId = rset.getInt("DeliveryCustomerId");
-
-					/* TODO: get address for the delivery */
-					String address = "";
-
-					newOrder = new DeliveryOrder(orderId, custId, orderTime, price, cost, isComplete, address);
-				} else if (orderType.equals(dine_in)) {
-					int tableNum = rset.getInt("DineinTableNum");
-					newOrder = new DineinOrder(orderId, -1, orderTime, price, cost, isComplete, tableNum);
-				}
-
-				orderList.add(newOrder);
-			}
+			query = "SELECT * FROM orderinfo " +
+					"left join dinein on OrderInfoId=DineInOrderId " +
+					"left join pickup on OrderInfoId=PickupOrderId " +
+					"left join delivery on OrderInfoId=DeliveryOrderId " +
+					"left join customer on DeliveryCustomerId=CustomerId;";
+		} else {
+			query = "SELECT * FROM orderinfo " +
+					"left join dinein on OrderInfoId=DineInOrderId " +
+					"left join pickup on OrderInfoId=PickupOrderId " +
+					"left join delivery on OrderInfoId=DeliveryOrderId " +
+					"left join customer on DeliveryCustomerId=CustomerId where OrderInfoStatus=0;";
 		}
-		else {
-			String query2 = "SELECT * FROM orderinfo left join dinein on OrderInfoId=DineInOrderId left join pickup on " +
-					"OrderInfoId=PickupOrderId left join delivery on OrderInfoId=DeliveryOrderId left join customer on " +
-					"DeliveryCustomerId=CustomerId where OrderInfoStatus=0";
-			Statement second_stmt = conn.createStatement();
-			ResultSet rset = second_stmt.executeQuery(query2);
+		Statement stmt = conn.createStatement();
+		ResultSet rset = stmt.executeQuery(query);
 
-			while (rset.next()) {
-				Order newOrder = null;
-				int orderId = rset.getInt("OrderInfoId");
-				String orderType = rset.getString("OrderInfoType");
-				double price = rset.getDouble("OrderInfoPrice");
-				double cost = rset.getDouble("OrderInfoCost");
-				String orderTime = rset.getString("OrderInfoTime");
-				int isComplete = rset.getBoolean("OrderInfoStatus") ? 1 : 0;
+		while (rset.next()) {
+			// get basic order info
+			Order newOrder = null;
+			int orderId = rset.getInt("OrderInfoId");
+			String orderType = rset.getString("OrderInfoType");
+			double price = rset.getDouble("OrderInfoPrice");
+			double cost = rset.getDouble("OrderInfoCost");
+			String orderTime = rset.getString("OrderInfoTime");
+			int isComplete = rset.getBoolean("OrderInfoStatus") ? 1 : 0;
 
-				if (orderType.equals(pickup)) {
-					int custId = rset.getInt("PickupCustomerId");
-					int isPickedUp = rset.getBoolean("PickupIsPickedUp") ? 1 : 0;
-					newOrder = new PickupOrder(orderId, custId, orderTime, price, cost, isPickedUp, isComplete);
-				} else if (orderType.equals(delivery)) {
-					int custId = rset.getInt("DeliveryCustomerId");
+			if (orderType.equals(pickup)) {
+				int custId = rset.getInt("PickupCustomerId");
+				int isPickedUp = rset.getBoolean("PickupIsPickedUp") ? 1 : 0;
+				newOrder = new PickupOrder(orderId, custId, orderTime, price, cost, isPickedUp, isComplete);
+			} else if (orderType.equals(delivery)) {
+				int custId = rset.getInt("DeliveryCustomerId");
 
-					/* TODO: get address for the delivery */
-					String address = "";
+				/* TODO: get address for the delivery */
+				String address = "";
 
-					newOrder = new DeliveryOrder(orderId, custId, orderTime, price, cost, isComplete, address);
-				} else if (orderType.equals(dine_in)) {
-					int tableNum = rset.getInt("DineinTableNum");
-					newOrder = new DineinOrder(orderId, -1, orderTime, price, cost, isComplete, tableNum);
+				newOrder = new DeliveryOrder(orderId, custId, orderTime, price, cost, isComplete, address);
+			} else if (orderType.equals(dine_in)) {
+				int tableNum = rset.getInt("DineinTableNum");
+				newOrder = new DineinOrder(orderId, -1, orderTime, price, cost, isComplete, tableNum);
+			}
+
+			// Get pizzas for order
+			PreparedStatement stmt2 = conn.prepareStatement("SELECT * FROM pizza WHERE PizzaOrderId = ?;");
+			stmt2.setInt(1, orderId);
+			ResultSet rset2 = stmt2.executeQuery();
+
+			while (rset2.next()) {
+				int pizzaId = rset2.getInt("PizzaId");
+				String pizzaSize = rset2.getString("PizzaSize");
+				String pizzaCrust = rset2.getString("PizzaCrustType");
+				String pizzaState = rset2.getString("PizzaState");
+				String pizzaDate = orderTime;
+				double custPrice = rset2.getDouble("PizzaBasePrice");
+				double busPrice = rset2.getDouble("PizzaBaseCost");
+
+				Pizza newPizza = new Pizza(pizzaId, pizzaSize, pizzaCrust, orderId, pizzaState, pizzaDate, custPrice,
+						busPrice);
+				newOrder.addPizza(newPizza);
+			}
+
+			// Get discounts
+			PreparedStatement stmt3 = conn.prepareStatement("select * from orderdiscount " +
+					"join discount on OrderDiscountDiscountId=DiscountId " +
+					"having OrderDiscountOrderId=?;");
+			stmt3.setInt(1, orderId);
+			ResultSet rset3 = stmt3.executeQuery();
+
+			while (rset3.next()) {
+				int discountId = rset3.getInt("DiscountId");
+				String discountName = rset3.getString("DiscountName");
+				String discountType = rset3.getString("DiscountType");
+				double discountAmount = 0.0;
+				boolean isPercent = false;
+				if (discountType.equals("percent")) {
+					isPercent = true;
+					discountAmount = rset3.getDouble("DiscountPercent");
+				} else {
+					discountAmount = rset3.getDouble("DiscountDollarAmt");
 				}
 
-				orderList.add(newOrder);
+				Discount newDiscount = new Discount(discountId, discountName, discountAmount, isPercent);
+				newOrder.addDiscount(newDiscount);
 			}
+
+			// Add order to list of orders
+			orderList.add(newOrder);
 		}
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
@@ -464,14 +499,25 @@ public final class DBNinja {
 		return null;
 	}
 
-	public static ArrayList<Order> getOrdersByDate(String date) {
+	public static ArrayList<Order> getOrdersByDate(String date) throws SQLException, IOException {
 		/*
 		 * Query the database for ALL the orders placed on a specific date
 		 * and return a list of those orders.
 		 *
 		 */
 
-		return null;
+		ArrayList<Order> allOrders = getOrders(false);
+		ArrayList<Order> orderList = new ArrayList<Order>();
+
+		for (int i = 0; i < allOrders.size(); i++) {
+			Order currOrder = allOrders.get(i);
+			String orderDate = currOrder.getDate().substring(0, 10);
+			if (orderDate.equals(date)) {
+				orderList.add(currOrder);
+			}
+		}
+
+		return orderList;
 	}
 
 	public static ArrayList<Discount> getDiscountList() throws SQLException, IOException {
@@ -482,7 +528,7 @@ public final class DBNinja {
 		 *
 		 */
 		ArrayList<Discount> discountList = new ArrayList<Discount>();
-		String query = "SELECT * FROM discount";
+		String query = "SELECT * FROM discount ORDER BY DiscountId;";
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 
@@ -569,7 +615,7 @@ public final class DBNinja {
 		 */
 		ArrayList<Topping> toppingList = new ArrayList<Topping>();
 
-		String query = "SELECT * FROM topping";
+		String query = "SELECT * FROM topping;";
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 
@@ -615,8 +661,8 @@ public final class DBNinja {
 		int id_num = t.getTopID();
 		String query = "update topping set ToppingCurrentInventory = ToppingCurrentInventory + ? where ToppingId = ?;";
 		PreparedStatement stmt = conn.prepareStatement(query);
-		stmt.setInt(2, id_num);
 		stmt.setDouble(1, quantity);
+		stmt.setInt(2, id_num);
 		stmt.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
@@ -710,7 +756,7 @@ public final class DBNinja {
 		 *
 		 */
 
-		String query = "SELECT * FROM ToppingPopularity";
+		String query = "SELECT * FROM ToppingPopularity;";
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 		String formatString = "%-18s%-5s";
@@ -735,7 +781,7 @@ public final class DBNinja {
 		 * The result should be readable and sorted as indicated in the prompt.
 		 *
 		 */
-		String query = "SELECT * FROM ProfitByPizza";
+		String query = "SELECT * FROM ProfitByPizzal;";
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 		String formatString = "%-18s%-18s%-10s%-20s";
@@ -763,7 +809,7 @@ public final class DBNinja {
 		 * The result should be readable and sorted as indicated in the prompt.
 		 *
 		 */
-		String query = "SELECT * FROM ProfitByOrderType";
+		String query = "SELECT * FROM ProfitByOrderType;";
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 		String formatString = "%-18s%-18s%-18s%-18s%-10s";
@@ -797,7 +843,6 @@ public final class DBNinja {
 		 *
 		 */
 
-
 		connect_to_db();
 
 		/*
@@ -806,14 +851,15 @@ public final class DBNinja {
 		 * attacks!
 		 *
 		 */
-//		String cname1 = "";
-//		String query = "Select FName, LName From customer WHERE CustID=" + CustID + ";";
-//		Statement stmt = conn.createStatement();
-//		ResultSet rset = stmt.executeQuery(query);
-//
-//		while (rset.next()) {
-//			cname1 = rset.getString(1) + " " + rset.getString(2);
-//		}
+		// String cname1 = "";
+		// String query = "Select FName, LName From customer WHERE CustID=" + CustID +
+		// ";";
+		// Statement stmt = conn.createStatement();
+		// ResultSet rset = stmt.executeQuery(query);
+		//
+		// while (rset.next()) {
+		// cname1 = rset.getString(1) + " " + rset.getString(2);
+		// }
 
 		/*
 		 * an example of the same query using a prepared statement...
@@ -828,7 +874,8 @@ public final class DBNinja {
 		os.setInt(1, CustID);
 		rset2 = os.executeQuery();
 		while (rset2.next()) {
-			cname2 = rset2.getString("CustomerFName") + " " + rset2.getString("CustomerLName"); // note the use of field names in the
+			cname2 = rset2.getString("CustomerFName") + " " + rset2.getString("CustomerLName"); // note the use of field
+																								// names in the
 			// getSting methods
 		}
 
