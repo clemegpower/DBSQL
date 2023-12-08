@@ -67,7 +67,7 @@ public class Menu {
 					EnterCustomer();
 					break;
 				case 4:// view order
-					// open/closed/date
+						// open/closed/date
 					ViewOrders();
 					break;
 				case 5:// mark order as complete
@@ -250,7 +250,7 @@ public class Menu {
 			}
 			ArrayList<Discount> pizzaDiscounts = p.getDiscounts();
 			for (int k = 0; k < pizzaDiscounts.size(); k++) {
-				DBNinja.usePizzaDiscount(p, pizzaDiscounts.get(i));
+				DBNinja.usePizzaDiscount(p, pizzaDiscounts.get(k));
 			}
 		}
 

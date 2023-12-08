@@ -1,4 +1,5 @@
 package cpsc4620;
+
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
@@ -154,9 +155,6 @@ public final class DBNinja {
 		stmt.setDouble(4, p.getBusPrice());
 		stmt.setDouble(5, p.getCustPrice());
 		stmt.setInt(6, p.getOrderID());
-		// stmt.setInt(6, p.getOrderID()); - this doesn't work because of some sort of
-		// foreign key constraint
-		// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE
 
 		stmt.executeUpdate();
 
@@ -166,14 +164,6 @@ public final class DBNinja {
 		while (rset.next()) {
 			p.setPizzaID(rset.getInt("max(PizzaId)"));
 		}
-
-//		ArrayList<Discount> discountList = p.getDiscounts();
-//
-//		// insert into pizzadiscount
-//
-//		for (int i = 0; i < discountList.size(); i++) {
-//			usePizzaDiscount(p, discountList.get(i));
-//		}
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -256,6 +246,7 @@ public final class DBNinja {
 		 *
 		 * What that means will be specific to your implementatinon.
 		 */
+
 		String query = "insert into pizzadiscount (PizzaDiscountPizzaId, PizzaDiscountDiscountId) values (?,?);";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setInt(1, p.getPizzaID());
@@ -292,12 +283,12 @@ public final class DBNinja {
 		 *
 		 */
 
-//		String[] address = c.getAddress().split("/n");
-//
-//		String street = address[0];
-//		String city = address[1];
-//		String state = address[2];
-//		String zipCode = address[3];
+		// String[] address = c.getAddress().split("/n");
+		//
+		// String street = address[0];
+		// String city = address[1];
+		// String state = address[2];
+		// String zipCode = address[3];
 
 		String query = "insert into customer (CustomerFName, CustomerLName, CustomerPhone) values (?, ?, ?);";
 		PreparedStatement stmt = conn.prepareStatement(query);
@@ -467,9 +458,32 @@ public final class DBNinja {
 				String pizzaDate = orderTime;
 				double custPrice = rset2.getDouble("PizzaBasePrice");
 				double busPrice = rset2.getDouble("PizzaBaseCost");
-
 				Pizza newPizza = new Pizza(pizzaId, pizzaSize, pizzaCrust, orderId, pizzaState, pizzaDate, custPrice,
 						busPrice);
+
+				// get pizza disocunts
+				PreparedStatement discountStmt = conn.prepareStatement(
+						"SELECT * FROM pizzadiscount join discount on PizzaDiscountDiscountId=DiscountId having PizzaDiscountPizzaId = ?;");
+				discountStmt.setInt(1, pizzaId);
+				ResultSet discountRset = discountStmt.executeQuery();
+
+				while (discountRset.next()) {
+					int discountId = discountRset.getInt("DiscountId");
+					String discountName = discountRset.getString("DiscountName");
+					String discountType = discountRset.getString("DiscountType");
+					double discountAmount = 0.0;
+					boolean isPercent = false;
+					if (discountType.equals("percent")) {
+						isPercent = true;
+						discountAmount = discountRset.getDouble("DiscountPercent");
+					} else {
+						discountAmount = discountRset.getDouble("DiscountDollarAmt");
+					}
+
+					Discount newDiscount = new Discount(discountId, discountName, discountAmount, isPercent);
+					newPizza.addDiscounts(newDiscount);
+				}
+
 				newOrder.addPizza(newPizza);
 			}
 
@@ -592,7 +606,7 @@ public final class DBNinja {
 
 		ArrayList<Customer> customerList = new ArrayList<Customer>();
 
-		String query = "SELECT * FROM customer;";
+		String query = "SELECT * FROM customer ORDER BY CustomerLName, CustomerFName, CustomerPhone;";
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 
