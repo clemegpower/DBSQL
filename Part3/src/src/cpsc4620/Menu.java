@@ -137,7 +137,12 @@ public class Menu {
 				} else if (existing_cust.equals("n")) {
 					EnterCustomer();
 					ArrayList<Customer> c = DBNinja.getCustomerList();
-					cust_id = c.get(c.size() - 1).getCustID();
+					for (int i = 0; i < c.size(); i++) {
+						int currId = c.get(i).getCustID();
+						if (cust_id < currId) {
+							cust_id = currId;
+						}
+					}
 				} else {
 					System.out.println(
 							"ERROR: I don't understand your input for: Is this order for an existing customer?");
