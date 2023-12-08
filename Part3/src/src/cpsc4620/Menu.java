@@ -67,7 +67,7 @@ public class Menu {
 					EnterCustomer();
 					break;
 				case 4:// view order
-						// open/closed/date
+					// open/closed/date
 					ViewOrders();
 					break;
 				case 5:// mark order as complete
@@ -116,7 +116,7 @@ public class Menu {
 		// System.out.println(order_ID);
 		int cust_id = -1;
 		int table_num = -1;
-
+		String existing_cust = "";
 		// User Input Prompts...
 		System.out.println(
 				"Is this order for: \n1.) Dine-in\n2.) Pick-up\n3.) Delivery\nEnter the number of your choice:");
@@ -125,7 +125,6 @@ public class Menu {
 			System.out.println("What is the table number for this order?");
 			table_num = Integer.parseInt(reader.readLine());
 		} else if (order_type == 2 || order_type == 3) {
-			String existing_cust = "";
 			while (!existing_cust.equals("y") && !existing_cust.equals("n")) {
 				System.out.println("Is this order for an existing customer? Answer y/n: ");
 				existing_cust = reader.readLine();
@@ -157,7 +156,7 @@ public class Menu {
 			}
 		}
 
-		if (order_type == 3) {
+		if (order_type == 3 && existing_cust.equals("n")) {
 			System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
 			String house_num = reader.readLine();
 			System.out.println("What is the Street for this order? (e.g., Smile Street)");
@@ -169,6 +168,7 @@ public class Menu {
 			System.out.println("What is the Zip Code for this order? (e.g., 20605)");
 			String zip = reader.readLine();
 			customer.setAddress(house_num + " " + street, city, state, zip);
+			DBNinja.updateAddress(customer);
 		}
 
 		int totalBusPrice = 0;
