@@ -1,5 +1,4 @@
 package cpsc4620;
-
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
@@ -168,18 +167,13 @@ public final class DBNinja {
 			p.setPizzaID(rset.getInt("max(PizzaId)"));
 		}
 
-		ArrayList<Discount> discountList = p.getDiscounts();
-
-		// insert into pizzadiscount
-
-		for (int i = 0; i < discountList.size(); i++) {
-			String query2 = "insert into pizzadiscount (PizzaDiscountPizzaId, PizzaDiscountDiscountId) " +
-					"values (?,?);";
-			PreparedStatement disconn = conn.prepareStatement(query2);
-			disconn.setInt(1, p.getPizzaID());
-			disconn.setInt(2, discountList.get(i).getDiscountID());
-			disconn.executeUpdate();
-		}
+//		ArrayList<Discount> discountList = p.getDiscounts();
+//
+//		// insert into pizzadiscount
+//
+//		for (int i = 0; i < discountList.size(); i++) {
+//			usePizzaDiscount(p, discountList.get(i));
+//		}
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
 		conn.close();
@@ -281,7 +275,7 @@ public final class DBNinja {
 		 * this information in the dabast
 		 */
 
-		String query = "insert into orderdiscount (PizzaDiscountOrder, OrderDiscountDiscount) values (?,?);";
+		String query = "insert into orderdiscount (OrderDiscountOrderId, OrderDiscountDiscountId) values (?,?);";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setInt(1, o.getOrderID());
 		stmt.setInt(2, d.getDiscountID());
@@ -298,6 +292,31 @@ public final class DBNinja {
 		 *
 		 */
 
+//		String[] address = c.getAddress().split("/n");
+//
+//		String street = address[0];
+//		String city = address[1];
+//		String state = address[2];
+//		String zipCode = address[3];
+
+		String query = "insert into customer (CustomerFName, CustomerLName, CustomerPhone) values (?, ?, ?);";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setString(1, c.getFName());
+		stmt.setString(2, c.getLName());
+		stmt.setString(3, c.getPhone());
+		stmt.executeUpdate();
+
+		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+	}
+
+	public static void updateAddress(Customer c) throws SQLException, IOException {
+		connect_to_db();
+		/*
+		 * This method adds a new customer to the database.
+		 *
+		 */
+
 		String[] address = c.getAddress().split("/n");
 
 		String street = address[0];
@@ -305,15 +324,13 @@ public final class DBNinja {
 		String state = address[2];
 		String zipCode = address[3];
 
-		String query = "insert into customer (CustomerFName, CustomerLName, CustomerPhone, CustomerStreet, CustomerCity, CustomerState, CustomerZipCode) values (?, ?, ?, ?, ?, ?, ?);";
+		String query = "update customer set CustomerStreet= ?, CustomerCity = ?, CustomerState = ?, CustomerZipCode= ? where CustomerId=?";
 		PreparedStatement stmt = conn.prepareStatement(query);
-		stmt.setString(1, c.getFName());
-		stmt.setString(2, c.getLName());
-		stmt.setString(3, c.getPhone());
-		stmt.setString(4, street);
-		stmt.setString(5, city);
-		stmt.setString(6, state);
-		stmt.setString(7, zipCode);
+		stmt.setString(1, street);
+		stmt.setString(2, city);
+		stmt.setString(3, state);
+		stmt.setString(4, zipCode);
+		stmt.setInt(5, c.getCustID());
 		stmt.executeUpdate();
 
 		// DO NOT FORGET TO CLOSE YOUR CONNECTION
@@ -875,7 +892,7 @@ public final class DBNinja {
 		rset2 = os.executeQuery();
 		while (rset2.next()) {
 			cname2 = rset2.getString("CustomerFName") + " " + rset2.getString("CustomerLName"); // note the use of field
-																								// names in the
+			// names in the
 			// getSting methods
 		}
 
