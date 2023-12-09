@@ -82,34 +82,26 @@ public final class DBNinja {
 		order_conn.executeUpdate();
 
 		if (o instanceof DineinOrder) {
-			System.out.println("Inserting into dine in...");
 			String query = "insert into dinein (DineInOrderId, DineInTableNum) " +
 					"values (?,?);";
 			PreparedStatement stmt = conn.prepareStatement(query);
 			stmt.setInt(1, o.getOrderID());
 			stmt.setInt(2, ((DineinOrder) o).getTableNum());
-			// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE???
-
 			stmt.executeUpdate();
 		} else if (o instanceof DeliveryOrder) {
-			System.out.println("Inserting into delivery...");
 			String query = "insert into delivery (DeliveryOrderId, DeliveryCustomerId) " +
 					"values (?,?);";
 			PreparedStatement stmt = conn.prepareStatement(query);
 			stmt.setInt(1, o.getOrderID());
 			stmt.setInt(2, o.getCustID());
-			// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE???
 			stmt.executeUpdate();
-
 		} else if (o instanceof PickupOrder) {
-			System.out.println("Inserting into pickup...");
 			String query = "insert into pickup (PickupOrderId, PickupCustomerId, PickupIsPickedUp) " +
 					"values (?,?,?);";
 			PreparedStatement stmt = conn.prepareStatement(query);
 			stmt.setInt(1, o.getOrderID());
 			stmt.setInt(2, o.getCustID());
 			stmt.setInt(3, ((PickupOrder) o).getIsPickedUp());
-			// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE???
 			stmt.executeUpdate();
 		} else {
 			System.err.println("Error in 'addOrder': variable 'o' has invalid order type");
