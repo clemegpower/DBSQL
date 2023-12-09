@@ -64,7 +64,7 @@ public final class DBNinja {
 		 * the necessary data for the delivery, dinein, and pickup tables
 		 *
 		 */
-
+		// enter into database
 		String query1 = "insert into orderinfo (OrderInfoId, OrderInfoType, OrderInfoPrice, OrderInfoCost, OrderInfoTime, OrderInfoStatus) "
 				+
 				"values (?,?,?,?,?,?);";
@@ -77,9 +77,7 @@ public final class DBNinja {
 		o.setDate(orderDate.toString());
 		java.sql.Timestamp timestamp = new java.sql.Timestamp(orderDate.getTime());
 		order_conn.setTimestamp(5, timestamp);
-
 		order_conn.setInt(6, o.getIsComplete());
-		// NEED TO SET ORDER_ID LATER WHEN ORDER IS DONE???
 
 		order_conn.executeUpdate();
 
@@ -407,9 +405,12 @@ public final class DBNinja {
 				newOrder = new PickupOrder(orderId, custId, orderTime, price, cost, isPickedUp, isComplete);
 			} else if (orderType.equals(delivery)) {
 				int custId = rset.getInt("DeliveryCustomerId");
+				String street = rset.getString("CustomerStreet");
+				String city = rset.getString("CustomerCity");
+				String state = rset.getString("CustomerState");
+				String zipcode = rset.getString("CustomerZipcode");
 
-				/* TODO: get address for the delivery */
-				String address = "";
+				String address = street + " " + city + " " + state + " " + zipcode;
 
 				newOrder = new DeliveryOrder(orderId, custId, orderTime, price, cost, isComplete, address);
 			} else if (orderType.equals(dine_in)) {

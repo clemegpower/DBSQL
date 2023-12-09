@@ -175,8 +175,8 @@ public class Menu {
 			DBNinja.updateAddress(customer);
 		}
 
-		int totalBusPrice = 0;
-		int totalCustPrice = 0;
+		double totalBusPrice = 0.0;
+		double totalCustPrice = 0.0;
 		ArrayList<Pizza> pizzaList = new ArrayList<Pizza>();
 
 		String more_pizza = "";

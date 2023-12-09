@@ -47,7 +47,7 @@ CREATE TABLE discount (
     DiscountId int AUTO_INCREMENT,
     DiscountName varchar(20), 
     DiscountDollarAmt DECIMAL(5,2),
-    DiscountPercent DECIMAL(5,2) CHECK (DiscountPercent <= 1 AND DiscountPercent >= 0),
+    DiscountPercent DECIMAL(5,2) CHECK (DiscountPercent <= 100.0 AND DiscountPercent >= 0.0),
     DiscountType varchar(10),
     PRIMARY KEY (DiscountId)
 );

@@ -137,7 +137,7 @@ Inserting into discount table
 */
 -- id:1
 INSERT INTO discount (DiscountName, DiscountPercent, DiscountType)
-VALUES ("Employee", 0.15, "percent");
+VALUES ("Employee", 15.0, "percent");
 
 -- id:2
 INSERT INTO discount (DiscountName, DiscountDollarAmt, DiscountType)
@@ -153,11 +153,11 @@ VALUES ("Specialty Pizza", 1.50, "dollar");
 
 -- id:5
 INSERT INTO discount (DiscountName, DiscountPercent, DiscountType)
-VALUES ("Happy Hour", 0.10, "percent");
+VALUES ("Happy Hour", 10.0, "percent");
 
 -- id:6
 INSERT INTO discount (DiscountName, DiscountPercent, DiscountType)
-VALUES ("Gameday Special", 0.20, "percent");
+VALUES ("Gameday Special", 20.0, "percent");
 
 
 /*
