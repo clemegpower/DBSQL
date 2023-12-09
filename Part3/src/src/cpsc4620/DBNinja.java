@@ -346,42 +346,14 @@ public final class DBNinja {
 	}
 
 	public static ArrayList<Order> getClosedOrders() throws SQLException, IOException {
-		connect_to_db();
+		ArrayList<Order> allOrder = getOrders(false);
 		ArrayList<Order> orderList = new ArrayList<Order>();
-		String query2 = "SELECT * FROM orderinfo left join dinein on OrderInfoId=DineInOrderId left join pickup on " +
-				"OrderInfoId=PickupOrderId left join delivery on OrderInfoId=DeliveryOrderId left join customer on " +
-				"DeliveryCustomerId=CustomerId where OrderInfoStatus=1;";
-		Statement second_stmt = conn.createStatement();
-		ResultSet rset = second_stmt.executeQuery(query2);
-
-		while (rset.next()) {
-			Order newOrder = null;
-			int orderId = rset.getInt("OrderInfoId");
-			String orderType = rset.getString("OrderInfoType");
-			double price = rset.getDouble("OrderInfoPrice");
-			double cost = rset.getDouble("OrderInfoCost");
-			String orderTime = rset.getString("OrderInfoTime");
-			int isComplete = rset.getBoolean("OrderInfoStatus") ? 1 : 0;
-
-			if (orderType.equals(pickup)) {
-				int custId = rset.getInt("PickupCustomerId");
-				int isPickedUp = rset.getBoolean("PickupIsPickedUp") ? 1 : 0;
-				newOrder = new PickupOrder(orderId, custId, orderTime, price, cost, isPickedUp, isComplete);
-			} else if (orderType.equals(delivery)) {
-				int custId = rset.getInt("DeliveryCustomerId");
-
-				/* TODO: get address for the delivery */
-				String address = "";
-
-				newOrder = new DeliveryOrder(orderId, custId, orderTime, price, cost, isComplete, address);
-			} else if (orderType.equals(dine_in)) {
-				int tableNum = rset.getInt("DineinTableNum");
-				newOrder = new DineinOrder(orderId, -1, orderTime, price, cost, isComplete, tableNum);
+		for (int i = 0; i < allOrder.size(); i++) {
+			Order currOrder = allOrder.get(i);
+			if (currOrder.getIsComplete() == 1) {
+				orderList.add(currOrder);
 			}
-
-			orderList.add(newOrder);
 		}
-		conn.close();
 		return orderList;
 	}
 
@@ -520,14 +492,25 @@ public final class DBNinja {
 		return orderList;
 	}
 
-	public static Order getLastOrder() {
+	public static Order getLastOrder() throws SQLException, IOException {
 		/*
 		 * Query the database for the LAST order added
 		 * then return an Order object for that order.
 		 * NOTE...there should ALWAYS be a "last order"!
 		 */
 
-		return null;
+		ArrayList<Order> allOrders = getOrders(false);
+		int lastId = 0;
+		Order lastOrder = null;
+		for (int i = 0; i < allOrders.size(); i++) {
+			Order currOrder = allOrders.get(i);
+			if (currOrder.getOrderID() > lastId) {
+				lastId = currOrder.getOrderID();
+				lastOrder = currOrder;
+			}
+		}
+
+		return lastOrder;
 	}
 
 	public static ArrayList<Order> getOrdersByDate(String date) throws SQLException, IOException {
@@ -543,7 +526,7 @@ public final class DBNinja {
 		for (int i = 0; i < allOrders.size(); i++) {
 			Order currOrder = allOrders.get(i);
 			String orderDate = currOrder.getDate().substring(0, 10);
-			if (orderDate.equals(date)) {
+			if (checkDate(getYear(date), getMonth(date), getDay(date), orderDate)) {
 				orderList.add(currOrder);
 			}
 		}
@@ -584,15 +567,42 @@ public final class DBNinja {
 		return discountList;
 	}
 
-	public static Discount findDiscountByName(String name) {
+	public static Discount findDiscountByName(String name) throws SQLException, IOException {
 		/*
 		 * Query the database for a discount using it's name.
 		 * If found, then return an OrderDiscount object for the discount.
 		 * If it's not found....then return null
 		 *
 		 */
+		connect_to_db();
 
-		return null;
+		Discount newDiscount = null;
+
+		String query = "select * from discount where DiscountName=?";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setString(1, name);
+		ResultSet rset = stmt.executeQuery();
+
+		while (rset.next()) {
+			int discountId = rset.getInt("DiscountId");
+			String discountName = rset.getString("DiscountName");
+			String discountType = rset.getString("DiscountType");
+			double discountAmount = 0.0;
+			boolean isPercent = false;
+			if (discountType.equals("percent")) {
+				isPercent = true;
+				discountAmount = rset.getDouble("DiscountPercent");
+			} else {
+				discountAmount = rset.getDouble("DiscountDollarAmt");
+			}
+
+			newDiscount = new Discount(discountId, discountName, discountAmount, isPercent);
+		}
+
+		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+
+		return newDiscount;
 	}
 
 	public static ArrayList<Customer> getCustomerList() throws SQLException, IOException {
@@ -625,15 +635,33 @@ public final class DBNinja {
 		return customerList;
 	}
 
-	public static Customer findCustomerByPhone(String phoneNumber) {
+	public static Customer findCustomerByPhone(String phoneNumber) throws SQLException, IOException {
 		/*
 		 * Query the database for a customer using a phone number.
 		 * If found, then return a Customer object for the customer.
 		 * If it's not found....then return null
 		 *
 		 */
+		connect_to_db();
 
-		return null;
+		Customer customer = null;
+
+		String query = "SELECT * FROM customer where CustomerPhone = ?;";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setString(1, phoneNumber);
+		ResultSet rset = stmt.executeQuery();
+
+		while (rset.next()) {
+			customer = new Customer(rset.getInt("CustomerId"),
+					rset.getString("CustomerFName"),
+					rset.getString("CustomerLName"),
+					rset.getString("CustomerPhone"));
+		}
+
+		// DO NOT FORGET TO CLOSE YOUR CONNECTION
+		conn.close();
+
+		return customer;
 	}
 
 	public static ArrayList<Topping> getToppingList() throws SQLException, IOException {
@@ -812,7 +840,7 @@ public final class DBNinja {
 		 * The result should be readable and sorted as indicated in the prompt.
 		 *
 		 */
-		String query = "SELECT * FROM ProfitByPizzal;";
+		String query = "SELECT * FROM ProfitByPizza;";
 		Statement stmt = conn.createStatement();
 		ResultSet rset = stmt.executeQuery(query);
 		String formatString = "%-18s%-18s%-10s%-20s";
