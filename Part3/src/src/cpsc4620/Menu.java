@@ -160,7 +160,7 @@ public class Menu {
 			}
 		}
 
-		if (order_type == 3 && existing_cust.equals("n")) {
+		if (order_type == 3) {
 			System.out.println("What is the House/Apt Number for this order? (e.g., 111)");
 			String house_num = reader.readLine();
 			System.out.println("What is the Street for this order? (e.g., Smile Street)");
