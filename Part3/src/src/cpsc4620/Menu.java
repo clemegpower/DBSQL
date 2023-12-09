@@ -112,8 +112,7 @@ public class Menu {
 		 * make sure you use the prompts below in the correct order!
 		 */
 
-		int order_ID = DBNinja.get_next_Orderid(); // need to get this value via sql or autoincrement?
-		// System.out.println(order_ID);
+		int order_ID = DBNinja.get_next_Orderid();
 		int cust_id = -1;
 		int table_num = -1;
 		String existing_cust = "";
@@ -226,7 +225,7 @@ public class Menu {
 					table_num);
 		} else if (order_type == 2) {
 			order_name = "Pick-up";
-			newOrder = new PickupOrder(order_ID, cust_id, date, totalCustPrice, totalBusPrice, 0, 1);
+			newOrder = new PickupOrder(order_ID, cust_id, date, totalCustPrice, totalBusPrice, 0, 0);
 		} else if (order_type == 3) {
 			order_name = "Delivery";
 			newOrder = new DeliveryOrder(order_ID, cust_id, date, totalCustPrice, totalBusPrice, 0,
@@ -265,9 +264,7 @@ public class Menu {
 		ArrayList<Customer> customerList = DBNinja.getCustomerList();
 		for (int i = 0; i < customerList.size(); i++) {
 			Customer c = customerList.get(i);
-			System.out.println("CustId=" + c.getCustID()
-					+ " | Name= " + c.getFName() + " " + c.getLName()
-					+ ", Phone= " + c.getPhone());
+			System.out.println(c.toString());
 		}
 	}
 
@@ -364,18 +361,15 @@ public class Menu {
 
 	public static void printOrderDetails(Order o) throws SQLException, IOException {
 		String name = DBNinja.getCustomerName(o.getCustID());
-		System.out.println("OrderId=" + o.getOrderID() + " | For customer: " + name + " | OrderType= "
-				+ o.getOrderType() + ", Placed on: "
-				+ o.getDate() + " | CustPrice=" + o.getCustPrice() + ", BusPrice=" + o.getBusPrice());
+		System.out.println(o.toString());
 		ArrayList<Discount> orderdiscounts = o.getDiscountList();
 		if (orderdiscounts.isEmpty()) {
 			System.out.println("NO ORDER DISCOUNTS");
 		} else {
+			System.out.println("ORDER DISCOUNTS: ");
 			for (int k = 0; k < orderdiscounts.size(); k++) {
-				System.out.println("DiscountId=" + orderdiscounts.get(k).getDiscountID() + " | Name="
-						+ orderdiscounts.get(k).getDiscountID()
-						+ " | Amount= " + orderdiscounts.get(k).getAmount() + " | isPercent= "
-						+ orderdiscounts.get(k).isPercent());
+				Discount currDiscount = orderdiscounts.get(k);
+				System.out.println(currDiscount.toString());
 			}
 		}
 		ArrayList<Pizza> pizzas = o.getPizzaList();
@@ -383,20 +377,16 @@ public class Menu {
 			System.out.println("No Pizzas");
 		}
 		for (int i = 0; i < pizzas.size(); i++) {
-			System.out.println("PizzaId=" + pizzas.get(i).getPizzaID() + " | Crust Type: "
-					+ pizzas.get(i).getCrustType() + ", Size= "
-					+ pizzas.get(i).getSize() + "| For order " + pizzas.get(i).getOrderID() + "| Pizza status "
-					+ pizzas.get(i).getPizzaState()
-					+ " | CustPrice=" + pizzas.get(i).getCustPrice() + ", BusPrice=" + pizzas.get(i).getBusPrice());
+			Pizza currPizza = pizzas.get(i);
+			System.out.println(currPizza.toString());
 			ArrayList<Discount> pizzaDiscounts = pizzas.get(i).getDiscounts();
 			if (pizzaDiscounts.isEmpty()) {
 				System.out.println("NO PIZZA DISCOUNTS");
 			} else {
+				System.out.println("PIZZA DISCOUNTS: ");
 				for (int j = 0; j < pizzaDiscounts.size(); j++) {
-					System.out.println("DiscountId=" + pizzaDiscounts.get(j).getDiscountID() + " | Name="
-							+ pizzaDiscounts.get(j).getDiscountID()
-							+ " | Amount= " + pizzaDiscounts.get(j).getAmount() + " | isPercent= "
-							+ pizzaDiscounts.get(j).isPercent());
+					Discount currPizzaDiscount = pizzaDiscounts.get(j);
+					System.out.println(currPizzaDiscount.toString());
 				}
 			}
 		}
@@ -575,7 +565,6 @@ public class Menu {
 					extra = true;
 					ret.modifyDoubledArray(indexOfChoice, true);
 				}
-				// boolean extra = (extraInput == "y") ? true : false;
 
 				// calculate the amount of toppings to use
 				double amountToUse = 0;
@@ -638,9 +627,7 @@ public class Menu {
 		ArrayList<Discount> discountList = DBNinja.getDiscountList();
 		for (int i = 0; i < discountList.size(); i++) {
 			Discount d = discountList.get(i);
-			System.out.println("DiscountId=" + d.getDiscountID()
-					+ " | " + d.getDiscountName() + ", Amount=" + d.getAmount()
-					+ ", isPercent= " + d.isPercent());
+			System.out.println(d.toString());
 		}
 	}
 
